@@ -1,20 +1,83 @@
 ---
-title: "Introduction"
-description: "Welcome to your project"
+title: "Khmer Physics Handbook — Grade 12 Physics for Cambodian Students"
+sidebarTitle: "Home"
+description: "A complete Grade 12 physics handbook written in Khmer, typeset in XeLaTeX with a custom sakura theme, covering kinetic theory, waves, and electromagnetism."
 ---
 
-Write a short description of your product here. What it does, who it's for, and what they can accomplish with it.
+The Khmer Physics Handbook is an open-source Grade 12 physics reference written entirely in Khmer with Khmer numerals throughout. Built with XeLaTeX and a custom sakura-themed design system, it delivers 83 pages of physics content — kinetic theory, wave mechanics, and electromagnetism — in a format students actually want to open.
 
-<Tip>
-  Ready to make this your own? Start by editing this page. Update your `docs.json` file to customize your site. Then fill out the [Quickstart](/quickstart) page.
-</Tip>
+This documentation covers how to build the PDF from source, how to contribute new content, and how to use the LaTeX macro library that powers the handbook's design.
 
-<Card title="Quickstart" icon="rocket" href="/quickstart">
-  This card links to the quickstart page in your project.
-</Card>
-<Card title="Components" icon="puzzle-piece" href="https://mintlify.com/docs/components">
-  Add cards, callouts, steps, tabs, and more to design and structure your pages.
-</Card>
-<Card title="Settings" icon="gear" href="https://mintlify.com/docs/organize/settings">
-  Set your site name, branding, and navigation in the `docs.json` file.
-</Card>
+<CardGroup cols={2}>
+  <Card title="Prerequisites & Setup" icon="wrench" href="/prerequisites">
+    Install XeLaTeX, TeX Live, fonts, and Git LFS before your first build
+  </Card>
+  <Card title="Building the PDF" icon="hammer" href="/building">
+    Compile main.pdf with one command using latexmk or the build scripts
+  </Card>
+  <Card title="Macro Reference" icon="code" href="/macros/structure-macros">
+    Every LaTeX macro defined in preamble.tex — structure, boxes, figures, numerals
+  </Card>
+  <Card title="Contributing Guide" icon="people-group" href="/contributing-guide">
+    Fork, branch, build, and open a pull request — the full workflow
+  </Card>
+</CardGroup>
+
+## What's in the handbook
+
+The handbook compiles to a single `main.pdf` and is organized into three chapters covering the full Cambodian Grade 12 physics syllabus.
+
+<CardGroup cols={3}>
+  <Card title="Chapter 1" icon="atom" href="/content/chapter1-overview">
+    Kinetic Theory of Gases — molecular postulates, pressure derivation, RMS speed, equipartition
+  </Card>
+  <Card title="Chapter 2" icon="wave-square" href="/content/chapter2-overview">
+    Waves & Interference — particle displacement, superposition, standing waves, double-slit
+  </Card>
+  <Card title="Chapter 3" icon="bolt" href="/content/chapter3-lesson1">
+    Electromagnetism — magnetism, Faraday induction, RL & LC circuits, alternating current
+  </Card>
+</CardGroup>
+
+## Quick build
+
+<Steps>
+  <Step title="Install Git LFS and clone">
+    ```bash
+    git lfs install
+    git lfs clone https://github.com/airiharuki/physics_textbook.git
+    cd physics_textbook
+    ```
+  </Step>
+  <Step title="Install fonts onto your system">
+    Copy all font files from `fonts/` to your system font directory. On Linux: `~/.fonts/` then run `fc-cache -fv`. On Windows/macOS: double-click each `.ttf` to install.
+  </Step>
+  <Step title="Build the PDF">
+    <CodeGroup>
+    ```bash Linux / macOS
+    bash build.sh
+    ```
+    ```bat Windows
+    build.cmd
+    ```
+    </CodeGroup>
+    Output is `main.pdf` in the repo root.
+  </Step>
+</Steps>
+
+<Note>
+  The handbook uses **XeLaTeX** exclusively — pdfLaTeX cannot handle Khmer OpenType shaping and will fail. Make sure your TeX distribution includes `latexmk` and `fontspec`.
+</Note>
+
+## Design system
+
+The sakura theme is defined entirely in `preamble.tex`. Every color, font, box style, floral divider, and page decoration is available as a named macro — no per-chapter setup needed.
+
+<CardGroup cols={2}>
+  <Card title="Colors & Fonts" icon="palette" href="/design/colors-and-fonts">
+    Named color constants, Khmer and Latin font families, and automatic script switching
+  </Card>
+  <Card title="Page Layout" icon="table-layout" href="/design/page-layout">
+    Geometry settings, headers, footers, and the sakura page background
+  </Card>
+</CardGroup>

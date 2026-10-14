@@ -1,0 +1,152 @@
+---
+title: "Chapter 1: Kinetic Theory of Gases — Content Overview"
+sidebarTitle: "Kinetic Theory"
+description: "Topics, key equations, and derivations covered in Chapter 1 of the handbook: molecular postulates, pressure from collisions, RMS speed, and equipartition."
+---
+
+Chapter 1 of the Khmer Physics Handbook introduces **kinetic theory of gases** (ទ្រឹស្តីសុីនេទិចនៃឧស្ម័ន) — the microscopic model that explains macroscopic gas behaviour through the motion and collisions of molecules. Starting from five foundational postulates, the chapter derives the pressure formula from first principles, connects microscopic kinetic energy to temperature, and arrives at the root-mean-square (RMS) speed of gas molecules. The chapter continues with the First Law of Thermodynamics (Lesson 2) and heat engines including the Carnot cycle (Lesson 3).
+
+---
+
+## 1. The Five Postulates of Kinetic Theory
+
+Kinetic theory rests on five idealising assumptions about gas molecules:
+
+| # | Postulate |
+|---|-----------|
+| 1 | Each molecule is treated as a **point particle** (material point). |
+| 2 | Gas molecules are in **continuous, ceaseless motion**. |
+| 3 | All collisions — molecule–molecule and molecule–wall — are **perfectly elastic**. |
+| 4 | Between collisions, each molecule travels in a **straight line at constant speed**. |
+| 5 | The **average kinetic energy** of the molecules depends only on the **temperature** of the gas. |
+
+<Tip>
+Postulate 5 is the bridge between the microscopic world (molecular speeds) and the macroscopic world (temperature on a thermometer). It is the key that unlocks all the equations that follow.
+</Tip>
+
+---
+
+## 2. Pressure Derivation from Molecular Collisions
+
+### Setup
+
+Consider $N$ molecules each of mass $m_0$ inside a **cubic container** of side length $L$ and volume $V = L^3$. Focus on one molecule moving along the $x$-axis toward the wall face $X$.
+
+**TikZ figure in source:** The textbook includes a 3-D cubic container diagram with coordinate axes $x$, $y$, $z$, a blue dot representing molecule $(m_0)$, and a velocity vector $\vec{v}_x$ pointing toward the right face. Caption reads *ចលនាម៉ូលេគុលឧស្ម័ន* (Gas molecule motion).
+
+### Momentum change per collision
+
+- Momentum before collision: $\vec{P}_1 = m_0 \vec{v}_x$
+- Momentum after collision (elastic, wall is stationary): $\vec{P}_2 = -m_0 \vec{v}_x$
+- Change in momentum magnitude: $|\Delta P| = 2m_0 v_x$
+
+### Force on the wall from one molecule
+
+The molecule travels distance $2L$ between successive hits on the same wall, giving time interval $\Delta t = 2L/v_x$:
+
+$$F = \frac{|\Delta P|}{\Delta t} = \frac{2m_0 v_x}{\dfrac{2L}{v_x}} = \frac{m_0 v_x^2}{L}$$
+
+### Pressure from $N$ molecules
+
+For $N$ molecules with different $x$-velocities $v_1, v_2, \ldots, v_N$, the total force on face area $A = L^2$ and the resulting pressure are:
+
+$$F = \frac{m_0}{L}\left(v_{x,1}^2 + \cdots + v_{x,N}^2\right)
+\qquad \Rightarrow \qquad
+P = \frac{F}{A} = \frac{Nm_0(v_x^2)_{av}}{V}$$
+
+### Three-dimensional correction
+
+Because motion is isotropic in 3-D:
+
+$$(v^2)_{av} = (v_x^2)_{av} + (v_y^2)_{av} + (v_z^2)_{av} = 3(v_x^2)_{av}$$
+
+Substituting gives the **kinetic pressure formula**:
+
+$$\boxed{P = \frac{1}{3}\frac{N}{V}m_0(v^2)_{av}}$$
+
+Recognising average kinetic energy $K_{av} = \frac{1}{2}m_0(v^2)_{av}$, this becomes the elegant result:
+
+$$\boxed{P = \frac{2}{3}\left(\frac{N}{V}\right)K_{av}}$$
+
+> **Physical meaning:** The pressure of a gas is proportional to the number density of molecules and their average kinetic energy.
+
+---
+
+## 3. Ideal Gas Law and the Boltzmann Relation
+
+### Ideal gas equation
+
+From proportionality arguments ($P \propto N$, $P \propto T$, $P \propto 1/V$):
+
+$$\boxed{PV = Nk_BT}$$
+
+In molar form (with $N = nN_A$ and universal gas constant $R = k_B N_A$):
+
+$$\boxed{PV = nRT}$$
+
+**Constants:**
+- $k_B = 1.38 \times 10^{-23}\ \text{J/K}$ (Boltzmann constant)
+- $R = 8.31\ \text{J/(mol·K)}$ (universal gas constant)
+
+### Kinetic energy and temperature
+
+Combining $PV = \frac{2}{3}NK_{av}$ with $PV = Nk_BT$:
+
+$$\boxed{K_{av} = \frac{3}{2}k_BT}$$
+
+The total kinetic energy of $N$ molecules (or $n$ moles):
+
+$$\boxed{K = NK_{av} = \frac{3}{2}Nk_BT = \frac{3}{2}nRT}$$
+
+<Note>
+Temperature $T$ must always be in **Kelvin** in these equations. The relationship $K_{av} = \frac{3}{2}k_BT$ is the mathematical expression of Postulate 5 — hotter gas means faster molecules.
+</Note>
+
+---
+
+## 4. RMS Speed of a Molecule
+
+Starting from $K_{av} = \frac{3}{2}k_BT = \frac{1}{2}m_0(v^2)_{av}$, solve for the **root-mean-square speed**:
+
+$$v_{rms} = \sqrt{(v^2)_{av}} = \sqrt{\frac{3k_BT}{m_0}}$$
+
+Substituting molar mass $M$ via $m_0 = M/N_A$:
+
+$$\boxed{v_{rms} = \sqrt{\frac{3RT}{M}}}$$
+
+**Units and variables:**
+| Symbol | Meaning | Unit |
+|--------|---------|------|
+| $v_{rms}$ | Root-mean-square speed | m/s |
+| $R$ | Universal gas constant | J/(mol·K) |
+| $T$ | Absolute temperature | K |
+| $M$ | Molar mass | kg/mol |
+
+---
+
+## 5. Key Equation Summary
+
+<Accordion title="All numbered equations from Chapter 1 Lesson 1">
+
+| Label | Equation | Description |
+|-------|----------|-------------|
+| (1) | $F = m_0 v_x^2 / L$ | Force from one molecule on a wall |
+| (2) | $P = Nm_0(v_x^2)_{av} / V$ | Pressure (1-D average) |
+| (3) | $P = \frac{1}{3}\frac{N}{V}m_0(v^2)_{av}$ | Kinetic pressure (3-D) |
+| — | $P = \frac{2}{3}\frac{N}{V}K_{av}$ | Pressure from average kinetic energy |
+| (4) | $PV = Nk_BT$ | Ideal gas law (molecular form) |
+| (5) | $PV = nRT$ | Ideal gas law (molar form) |
+| (6) | $K_{av} = \frac{3}{2}k_BT$ | Average kinetic energy per molecule |
+| (7) | $K = \frac{3}{2}nRT$ | Total kinetic energy of $n$ moles |
+| (8) | $v_{rms} = \sqrt{3k_BT/m_0}$ | RMS speed (individual molecule mass) |
+| (9) | $v_{rms} = \sqrt{3RT/M}$ | RMS speed (molar mass form) |
+
+</Accordion>
+
+---
+
+## 6. What Comes Next in Chapter 1
+
+**Lesson 2 — First Law of Thermodynamics (ច្បាប់ទី១ ទែម៉ូឌីណាមិច):** Introduces thermodynamic systems and processes, work done during volume change ($W = P\Delta V$ for isobaric; $W = nRT\ln(V_2/V_1)$ for isothermal; $W = 0$ for isochoric), and the First Law $Q = \Delta U + W$.
+
+**Lesson 3 — Heat Engines (ម៉ាស៊ីន):** Covers adiabatic processes ($Q = 0$, $W = \frac{3}{2}nR(T_1 - T_2)$), the Carnot cycle (four stages: two isothermal + two adiabatic), the Carnot efficiency $e_C = 1 - T_C/T_H$, and real 4-stroke and 2-stroke gasoline engines with thermal, mechanical, and overall efficiency formulas.

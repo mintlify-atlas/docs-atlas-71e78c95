@@ -1,0 +1,247 @@
+---
+title: "Coding and Typesetting Conventions for the Handbook"
+sidebarTitle: "Conventions"
+description: "The mandatory conventions for LaTeX source, Khmer spellings, commit messages, versioning, and Git configuration that all contributors must follow."
+---
+
+The Khmer Physics Handbook has a tight set of conventions that every contributor must follow. They are not preferences — they exist because the book was built from them, and deviating silently breaks either the Khmer shaping, the layout, or the automated gates. This page documents every convention from `CONTRIBUTING.md` and `AGENTS.md` in one place.
+
+---
+
+## LaTeX Conventions
+
+### Engine
+
+<Warning>
+  **XeLaTeX only. Always.** `pdfLaTeX` will break Khmer OpenType shaping — `fontspec` requires XeLaTeX. If you run `pdflatex main.tex` by mistake, the build will fail with font errors. The `.latexmkrc` already pins the engine to XeLaTeX; plain `latexmk main.tex` is all you need.
+</Warning>
+
+### Macros live in `preamble.tex` — never per-chapter
+
+All shared macros, fonts, colors, and box styles are defined in `preamble.tex`. This is the shared brain of the entire document.
+
+- If a macro already exists, **use it — never redefine it per chapter**.
+- If you need a new box or figure macro, **add it to `preamble.tex`** so every chapter can use it.
+- Colors (`primary`, `boxbg`, `boxframe`, `brownheader`, `bacpurple`, `khmerred`, etc.) are all in `preamble.tex`. Add new colors there too.
+
+Key macros defined in `preamble.tex`:
+
+| Macro | What it does |
+|---|---|
+| `\khmerphoto[width]{path}{caption}` | Framed body photo with optional caption (default `0.6\linewidth`) |
+| `\khmervideobox{VIDEO}{TITLE}{CAPTION}` | Clickable YouTube box with auto-generated QR code |
+| `\formulabox[opts]{title}{...}` | Titled box for a cluster of formulas |
+| `\defbox{...}` | Plain panel with a `bacpink` left accent bar |
+| `\quickformula{...}` | Single formula in a rounded box |
+| `\khmertopic{...}` | Numbered topic heading |
+| `\khmersubtopic{...}` | Numbered sub-topic heading |
+| `\khmerlesson{...}` | Lesson heading |
+| `\khmerchapter{...}` | Big chapter heading |
+| `\tanbgdivider` | Floral section divider |
+| `\khmernumraw{n}` | Convert Arabic numeral to Khmer numeral |
+| `\khmernum{n}` | Page number in Khmer with "ទំព័រទី" prefix |
+
+### Formula boxes — full-width and unbreakable
+
+`\formulabox` (and any box macro that has a `breakable` option) **must** sit on its own full-width line with `breakable=false`:
+
+```latex
+\formulabox[breakable=false]{ចំណងជើង}{
+  % formulas here
+}
+```
+
+<Warning>
+  Trapping a `formulabox` inside a frozen `minipage` causes it to refuse to split, overflow the page, and stack its rows on top of each other. This is the project's favorite failure mode. Always keep these boxes full-width.
+</Warning>
+
+### Side-by-side text and figure layout
+
+For figure + text rows, mirror the existing `minipage` blocks in `chapters/chapter3.tex` exactly. The column widths are standardized:
+
+```latex
+\noindent
+\begin{minipage}[t]{0.58\textwidth}
+  % left column: text or itemize
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.40\textwidth}
+  % right column: image(s)
+\end{minipage}
+```
+
+Keep the same `0.58` / `0.40` split everywhere. Rows should be kept short so pages break cleanly.
+
+### Photos always through `\khmerphoto`
+
+Photos in the body of the book **always** go through `\khmerphoto` — never a bare `\includegraphics`:
+
+```latex
+% ✅ Correct
+\khmerphoto[width=0.6\linewidth]{img/magfield.jpg}{ជំពូកទី៣ — ម៉ាញ៉េដ}
+
+% ❌ Wrong — never do this in body text
+\includegraphics[width=0.6\linewidth]{img/magfield.jpg}
+```
+
+Give image files descriptive, lowercase names and place them under `img/`.
+
+### Adding a new chapter
+
+Every new chapter requires exactly three things:
+
+```latex
+% 1. Create the content file
+chapters/chapterN.tex
+
+% 2. Create the banner file
+banners/chapterNbanner.tex
+
+% 3. Add two \input{} lines to main.tex
+\input{banners/chapterNbanner.tex}
+\input{chapters/chapterN.tex}
+\clearpage
+```
+
+That is the entire recipe. Do not add a chapter any other way.
+
+### Equation and figure numbering
+
+Equation and figure numbers are **continuous through the entire book** — they do not restart per lesson or per chapter. As of the end of lesson 3, figures run រូបទី១–រូបទី៤១ and equations run (១)–(២៩). Continue that sequence. Do not trust OCR-pasted numbers — they are always local to the source and will collide.
+
+---
+
+## Standard Khmer Spellings
+
+These spellings are **non-negotiable** in this repository. They were chosen deliberately and are enforced in review. Use the correct column only.
+
+| Term | ✅ Correct | ❌ Never use |
+|---|---|---|
+| Solenoid | សូលេណូអុីត | សូឡេណូអ៊ីត, សូលេណូអ៊ីត |
+| Magnetic | ម៉ាញេទិក | ម៉ាញ៉េទិច, ម៉ាញ៉េទិក, ម៉ាញេទិច |
+| Vector | វ៉ិចទ័រ | វុិចទ័រ |
+
+Figure captions must be prefixed with `រូបទីNN៖` (using Khmer numerals for the number).
+
+---
+
+## Khmer Numerals
+
+All numbers visible to students — pages, sections, equations, tables, figure labels — must use Khmer numerals. Use `\khmernumraw{n}` to convert Arabic numerals programmatically, or write them directly: ១ ២ ៣ ៤ ៥ ៦ ៧ ៨ ៩ ០.
+
+<Warning>
+  **Never put Khmer numerals inside math mode.** Inside `$...$` they fall back to the `cmr12` font and produce "Missing character" warnings in `main.log`. Equation labels must live **outside** the math environment.
+</Warning>
+
+The correct pattern for a numbered equation label (from lesson 2) is:
+
+```latex
+\end{flalign*}
+\begin{center}
+  $\boxed{E = \frac{1}{2}LI^2}$ \quad (២៩)
+\end{center}
+```
+
+The label `(២៩)` sits outside `$...$` — it is plain text next to a boxed math expression, not inside math mode itself.
+
+---
+
+## Commit Message Format
+
+All commit messages must follow the [Conventional Commits 1.0.0](https://www.conventionalcommits.org/en/v1.0.0/) specification. This is enforced automatically by the `.githooks/commit-msg` hook, wired through `core.hooksPath = .githooks`. A non-conforming message will be rejected with an explanation.
+
+### Format
+
+```text
+<type>(<scope>): <description>
+```
+
+For a breaking change, add `!` before the colon and a `BREAKING CHANGE:` footer:
+
+```text
+<type>(<scope>)!: <description>
+
+BREAKING CHANGE: <explanation of what breaks and why>
+```
+
+- **`<type>`** — one of: `build` `chore` `ci` `docs` `feat` `fix` `perf` `refactor` `revert` `style` `test`
+- **`<scope>`** — lowercase, describes what was affected (e.g. `ch3`, `preamble`, `build`, `lfs`)
+- **`<description>`** — short imperative sentence, lowercase
+
+### Examples
+
+```bash
+# Adding a new feature to chapter 3
+git commit -m "feat(ch3): add Lorentz force derivation"
+
+# Fixing a typo in the preamble
+git commit -m "fix(preamble): correct khmerphoto caption alignment"
+
+# Updating build infrastructure — breaking change
+git commit -m "build(latexmkrc)!: switch engine flag to mode 5
+
+BREAKING CHANGE: removes the -xelatex flag from latexmk calls;
+.latexmkrc now pins the engine via \$pdf_mode = 5."
+```
+
+<Note>
+  `main.pdf` is a checked-in file by design (it is **not** in Git LFS). Always include the rebuilt PDF in your commit alongside the source changes — `git add chapters/chapterN.tex main.pdf`.
+</Note>
+
+---
+
+## Versioning
+
+The project follows [SemVer 2.0.0](https://semver.org/spec/v2.0.0.html). **Every commit is a release** and receives an annotated tag.
+
+| Stage | Tag format | When |
+|---|---|---|
+| Active writing | `v1.0.0-alpha.N` | While the book is being written |
+| Feature-complete | `v1.0.0-beta.1` | When all lessons are written |
+| Publication | `v1.0.0` | On release day |
+
+Rules:
+- Tags are annotated: `git tag -a v1.0.0-alpha.15 -m "feat(ch4): open lesson 4 heading"`
+- `N` is hand-picked in commit order — **never renumber existing tags** without a force-push and team agreement.
+- Every annotated tag **must** have a matching section in `CHANGELOG.md` describing what changed.
+
+---
+
+## Shell Scripts and Git Hooks
+
+All shell scripts (`*.sh`) and hook files (`.githooks/**`) **must use LF line endings**. This is enforced by `.gitattributes`:
+
+```text
+*.sh         eol=lf
+.githooks/** eol=lf
+```
+
+<Warning>
+  On Windows, `core.autocrlf=true` will silently convert LF to CRLF. A CRLF shebang line (`#!/bin/bash\r`) makes bash refuse to execute the hook, silently disarming the commit-msg gate. The `.gitattributes` rules prevent this — do not remove them.
+</Warning>
+
+The `.gitignore` already covers all LaTeX auxiliary files (`*.xdv`, `*.fls`, `*.fdb_latexmk`, `*.synctex.gz`, `.rider/`, `.idea/`). Do not add `main.pdf` to `.gitignore` — it is committed by design.
+
+---
+
+## `circuitikz` and TikZ
+
+`circuitikz` is loaded globally in `preamble.tex` (`\usepackage[american]{circuitikz}`). The house style for drawn circuits is:
+
+```latex
+[line width=1.1pt, scale=0.72, transform shape]
+```
+
+`\usetikzlibrary{arrows.meta}` is also global, so `[>=Stealth]` works anywhere with no per-chapter setup. Do not re-add or remove these packages casually — they were toggled multiple times during lesson 3 and `qrcode` was accidentally clobbered once.
+
+---
+
+<Accordion title="OCR cleanup checklist">
+  When inserting content that started as scanned or OCR-pasted text, complete this checklist before committing:
+
+  1. Strip all `[cite: N]` artefacts left over from the OCR tool.
+  2. Normalize all Khmer terminology to the standard spellings in the table above.
+  3. Continue the book's running equation and figure numbering — do not restart at (១) or រូបទី១.
+  4. Verify that Khmer numeral labels are **outside** math mode.
+  5. Run a full clean build and confirm `missing chars: 0`.
+</Accordion>

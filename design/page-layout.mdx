@@ -1,0 +1,243 @@
+---
+title: "Page Layout, Headers, Footers, and Sakura Decorations"
+sidebarTitle: "Page Layout"
+description: "Geometry settings, header and footer configuration, the sakura page background decorations, and the floral divider macro used throughout the handbook."
+---
+
+Every page of the Khmer Physics Handbook is shaped by a handful of settings in `preamble.tex`: the paper geometry, the fancyhdr header and footer rules, and a TikZ-based sakura decoration layer that is composited onto every page automatically at shipout time. This page documents all of those settings so contributors can understand what is already in place and avoid accidentally overriding it.
+
+## Page geometry
+
+The handbook is typeset on A4 paper in a twoside layout at a 12pt base size. The margins are deliberately generous at the top to accommodate the two-line centered header.
+
+```latex
+\geometry{
+    left=2cm,
+    right=2cm,
+    top=3.4cm,
+    bottom=3cm,
+    footskip=50pt,
+    headheight=52pt
+}
+```
+
+| Parameter | Value | Notes |
+|---|---|---|
+| Paper | A4 | Standard Cambodian school paper size |
+| Layout | `twoside` | Inner/outer margins mirror for print binding |
+| Base font size | 12pt | Declared on the `\documentclass` line in `main.tex` |
+| Left margin | 2 cm | |
+| Right margin | 2 cm | |
+| Top margin | 3.4 cm | Tall enough to clear the two-line `\khmermoul` header |
+| Bottom margin | 3 cm | |
+| `footskip` | 50 pt | Distance from baseline of last body line to footer baseline |
+| `headheight` | 52 pt | Height reserved for the header box |
+
+<Note>
+  The `twoside` option means that `[LO,RE]` footer placement (see below) puts the page number on the outer edge of every physical page — left-hand pages get it on the left, right-hand pages on the right — which is standard for bound books.
+</Note>
+
+---
+
+## Line-breaking parameters
+
+Khmer text does not use hyphenation, and word boundaries are not always marked by spaces, so the line-breaking configuration differs significantly from a typical English document.
+
+```latex
+\tolerance=2000
+\emergencystretch=2em
+\hfuzz=2pt
+
+\interlinepenalty=100
+\postdisplaypenalty=100
+\hyphenpenalty=5000
+
+\ifdefined\XeTeXlinebreaklocale
+\XeTeXlinebreaklocale "km"
+\XeTeXlinebreakskip = 0pt plus 2pt minus 0.5pt
+\fi
+```
+
+| Parameter | Value | Effect |
+|---|---|---|
+| `\tolerance` | 2000 | Allows TeX to accept slightly loose lines before calling them bad |
+| `\emergencystretch` | 2em | Extra stretch budget used as a last resort to avoid overfull boxes |
+| `\hfuzz` | 2pt | Overfull warnings smaller than this are suppressed |
+| `\hyphenpenalty` | 5000 | Strongly discourages hyphenation (Khmer has none) |
+| `\XeTeXlinebreaklocale` | `"km"` | Activates XeTeX's ICU-based Khmer word-boundary detector |
+| `\XeTeXlinebreakskip` | `0pt plus 2pt minus 0.5pt` | Allows up to 2pt of inter-cluster stretch for Khmer line-breaking |
+
+<Tip>
+  The `\XeTeXlinebreaklocale "km"` setting is what makes Khmer text wrap correctly at syllable boundaries. It is guarded by `\ifdefined\XeTeXlinebreaklocale` so that the file can be read by engines that do not support it, even though XeLaTeX is the only supported engine for building the handbook.
+</Tip>
+
+---
+
+## Header
+
+The header is configured with `fancyhdr`. A single centered header block displays the handbook title in two lines using `\khmermoul` (the Moul display typeface). No header rule is drawn.
+
+```latex
+\pagestyle{fancy}
+\fancyhf{}
+
+\renewcommand{\headrulewidth}{0pt}
+
+\fancyhead[C]{%
+    \large
+    \khmermoul
+    \shortstack{
+        សៀវភៅជំនួយស្មារតីសម្រាប់ថ្នាក់ទី១២
+        \\[0.15em]
+        មុខវិជ្ជា៖ រូបវិទ្យា
+    }
+}
+```
+
+| Parameter | Value |
+|---|---|
+| Placement | Center (`[C]`) — applies to all pages |
+| Font | `\khmermoul` at `\large` |
+| Line 1 | សៀវភៅជំនួយស្មារតីសម្រាប់ថ្នាក់ទី១២ |
+| Line 2 | មុខវិជ្ជា៖ រូបវិទ្យា |
+| Header rule | None (`headrulewidth=0pt`) |
+
+---
+
+## Footer
+
+The footer carries the Khmer page number on the outer edge of each page. No footer rule is drawn.
+
+```latex
+\renewcommand{\footrulewidth}{0pt}
+
+\fancyfoot[LO,RE]{%
+    \small
+    \textcolor{bacpurple}{
+        \khmernum{\thepage}
+    }%
+}
+```
+
+| Parameter | Value |
+|---|---|
+| Placement | Left on odd pages, right on even pages (`[LO,RE]`) |
+| Font | `\khmerpagenum` (Romnea), `\small` |
+| Color | `bacpurple` (`#7C3AED`) |
+| Content | `\khmernum{\thepage}` → "ទំព័រទី" followed by the page number in Khmer digits |
+| Footer rule | None (`footrulewidth=0pt`) |
+
+<Note>
+  `\khmernum{n}` prepends the Khmer word for "page" ("ទំព័រទី") and then converts the Arabic page counter to full Khmer numerals using `\khmernumraw`. Never use raw Arabic digits for page numbers — consistency with Khmer numerals throughout the book is a core project convention.
+</Note>
+
+---
+
+## Sakura page background
+
+Every page in the compiled PDF receives a sakura floral decoration layer. The macro `\pagebackground` is applied once via:
+
+```latex
+\AddToShipoutPictureBG{\pagebackground}
+```
+
+This fires at every `\shipout`, so the background is guaranteed to appear on every page including chapter openers, regardless of which page style is active.
+
+The `\pagebackground` macro opens a `tikzpicture` with the `remember picture` and `overlay` options so that all coordinates are expressed relative to `current page` anchors. It then places clusters of sakura flowers, sparkles, and drifting petals at all four corners of the page plus a few subtle interior accents.
+
+### Corner decoration clusters
+
+Each corner receives a primary large flower, a medium flower, a small flower, and one or two sparkles:
+
+```latex
+% North-west corner example
+\sakuraflower[0.75]{$(current page.north west)+(1.05,-1.2)$}{1}
+\sakuraflower[0.45]{$(current page.north west)+(1.9,-2.1)$}{0.75}
+\sakuraflower[0.35]{$(current page.north west)+(0.7,-2.3)$}{0.55}
+\sparkle[0.28]{$(current page.north west)+(2.6,-1.2)$}{0.8}
+\pinksparkle[0.18]{$(current page.north west)+(2.0,-0.85)$}{0.7}
+\sakurapetaldrift[0.35]{$(current page.north west)+(1.55,-2.7)$}{35}{0.5}
+```
+
+### Interior accents
+
+A handful of very small, low-opacity drifting petals and sparkles float in the interior of the page to add depth without distracting from the body text:
+
+```latex
+\sakurapetaldrift[0.25]{$(current page.north west)+(5.5,-6)$}{50}{0.12}
+\sakurapetaldrift[0.22]{$(current page.north east)+(-4,-8)$}{-60}{0.10}
+\sparkle[0.18]{$(current page.north west)+(7,-3)$}{0.08}
+```
+
+---
+
+## Decorative macros
+
+The following four macros draw the individual elements that make up the page background. They can also be called directly inside TikZ environments within chapter content if needed.
+
+### `\sakuraflower[scale]{pos}{opacity}`
+
+Draws a five-petal sakura flower. Each petal is a filled Bézier path in `sakurapetal` color with a `sakuradark` outline at half the specified opacity. A `bacpink` filled circle is drawn at the center.
+
+| Argument | Default | Description |
+|---|---|---|
+| `scale` (optional) | `0.4` | Overall scale factor |
+| `pos` | — | TikZ coordinate for the flower center |
+| `opacity` | — | Fill opacity (0–1); outline uses `opacity × 0.5` |
+
+### `\sakurapetaldrift[scale]{pos}{angle}{opacity}`
+
+Draws a single detached petal — the same Bézier shape as one petal of `\sakuraflower`, rotated by `angle` degrees to simulate a drifting motion.
+
+| Argument | Default | Description |
+|---|---|---|
+| `scale` (optional) | `0.3` | Overall scale factor |
+| `pos` | — | TikZ coordinate for the petal base |
+| `angle` | — | Rotation in degrees |
+| `opacity` | — | Fill opacity (0–1) |
+
+### `\sparkle[scale]{pos}{opacity}`
+
+Draws a four-point star sparkle in `bacpurple` (`#7C3AED`). The shape is a four-lobe Bézier path that narrows to pointed tips along both axes.
+
+| Argument | Default | Description |
+|---|---|---|
+| `scale` (optional) | `1` | Overall scale factor |
+| `pos` | — | TikZ coordinate for the sparkle center |
+| `opacity` | — | Fill opacity (0–1) |
+
+### `\pinksparkle[scale]{pos}{opacity}`
+
+Identical in shape to `\sparkle` but filled with `bacpink` (`#F45BA0`) instead of `bacpurple`.
+
+| Argument | Default | Description |
+|---|---|---|
+| `scale` (optional) | `1` | Overall scale factor |
+| `pos` | — | TikZ coordinate for the sparkle center |
+| `opacity` | — | Fill opacity (0–1) |
+
+---
+
+## The `\tanbgdivider` floral section divider
+
+`\tanbgdivider` is the inline ornamental divider used between sections within a lesson. It renders as a centered TikZ figure: a horizontal line on each side capped with filled circles, joined at the center by a filled diamond rotated 45°. Everything is drawn in `tanbg` (`#D7CBB5`).
+
+The macro takes no arguments. Call it directly after a `\khmerlesson` heading or between major content blocks to visually separate sections:
+
+```latex
+\khmerlesson{មេរៀនទី១៖ ម៉ាញេទិក}
+
+\tanbgdivider
+
+\khmertopic{១. វាល​ម៉ាញេទិក}
+```
+
+<Tip>
+  `\tanbgdivider` is a `center`-environment TikZ drawing, so it adds its own vertical whitespace. Do not wrap it in an additional `\begin{center}...\end{center}` block or add manual `\vspace` immediately before and after it — the spacing is already tuned.
+</Tip>
+
+The full TikZ structure draws:
+- A line from `(-3, 0)` to `(-0.5, 0)` in `tanbg`, `line width=1.5pt`, `line cap=round`
+- Filled circles at `(-3, 0)` and `(-0.5, 0)`, radius 2.5pt
+- A rotated square (diamond) centered at the origin with half-diagonal 0.28, `rounded corners=1.5pt`
+- A mirror line from `(0.5, 0)` to `(3, 0)` with matching endpoint circles

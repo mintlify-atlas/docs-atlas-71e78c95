@@ -1,0 +1,177 @@
+---
+title: "Colors and Fonts in the Khmer Physics Handbook Design System"
+sidebarTitle: "Colors & Fonts"
+description: "All named color constants and font families defined in preamble.tex — the sakura palette, Khmer typefaces, and the automatic Latin/Greek script-switching system."
+---
+
+The visual identity of the Khmer Physics Handbook is defined entirely inside `preamble.tex`. Every color token, every typeface, and the automatic script-switching logic that seamlessly transitions between Khmer, Latin, and Greek characters all live in that single shared file. This page catalogs each named constant so that contributors can apply them consistently without guessing at hex values or font names.
+
+## Colors
+
+The sakura palette was designed to feel warm and approachable — a deliberate departure from the grey austerity of a typical government textbook. Colors are defined with `\definecolor` and are available globally once `preamble.tex` is loaded.
+
+<Note>
+  All color names are lowercase with no hyphens. Use them exactly as listed — `\color{bacpink}`, `\colorbox{boxbg}{...}`, and so on. Inventing a one-off color per chapter breaks visual consistency; add any new color to `preamble.tex` so the whole book can share it.
+</Note>
+
+| Name | Hex / RGB | Used for |
+|---|---|---|
+| `bacpink` | `#F45BA0` | Accent bar, `\points{}` borders, `\defbox` left bar |
+| `bacpurple` | `#7C3AED` | Page numbers, `\points{}` text, sparkle decorations |
+| `bacpinklight` | `#FDEBF6` | Box background fill in `\points{}` |
+| `sakurapetal` | `#FBC9DE` | Sakura flower petal fill |
+| `sakuradark` | `#F090B8` | Sakura petal outline |
+| `tanbg` | `#D7CBB5` | Decorative divider (`\tanbgdivider`) |
+| `brownheader` | `#8B3A0F` | Chapter/lesson/topic headings, figure captions |
+| `khmerred` | `RGB(255, 105, 180)` | Formula box accents, photo frames |
+| `primary` | `RGB(186, 85, 211)` | Formula box titles, circled numbers, photo frames |
+| `boxbg` | `RGB(255, 245, 250)` | Formula box and video box backgrounds |
+| `boxframe` | `RGB(230, 190, 230)` | Older box frame color |
+| `rowhdr` | `RGB(245, 210, 235)` | Table row headers |
+| `waveblue` | `RGB(30, 144, 255)` | Wave/current diagrams |
+| `wavered` | `RGB(220, 20, 60)` | Wave diagrams |
+| `wavepurple` | `RGB(138, 43, 226)` | Wave diagrams |
+
+<Tip>
+  The three wave colors — `waveblue`, `wavered`, and `wavepurple` — are primarily used in Chapter 2 interference diagrams. Reuse them any time you need to differentiate multiple waves on the same axes so that readers always see the same color-to-wave mapping throughout the book.
+</Tip>
+
+---
+
+## Fonts
+
+The handbook loads all typefaces through `fontspec`, which gives XeLaTeX full access to OpenType features, including Khmer script shaping and the HarfBuzz rendering pipeline. Each font family is declared once in `preamble.tex` as a named command so that authors never have to reference font file names in chapter files.
+
+<Note>
+  All fonts must be installed on the **system** before building — XeLaTeX will not find fonts that only exist inside the repo's `fonts/` directory. On Linux, copy them to `~/.fonts/` or `/usr/share/fonts/` and run `fc-cache -fv`. On Windows and macOS, use the system font installer.
+</Note>
+
+### Default font features
+
+Before any individual font is declared, `preamble.tex` sets shared defaults that apply to every subsequently loaded font unless overridden:
+
+```latex
+\defaultfontfeatures{
+    Path = fonts/,
+    Script = Khmer,
+    Renderer = HarfBuzz,
+    HyphenChar = None
+}
+```
+
+<Warning>
+  Switching `Renderer` away from `HarfBuzz` — for example to `Default` — can reintroduce missing-character glitches in Khmer glyph shaping. Always leave the renderer set to `HarfBuzz` for any font that renders Khmer script.
+</Warning>
+
+### Font family reference
+
+**Main body font — OpenKhmerSchool**
+
+The default paragraph font, matching the Grade 10 and Grade 12 MoEYS handbooks. Loaded via `\setmainfont` with `AutoFakeSlant=0.2` to synthesize italics, since the face has no true italic cut.
+
+```latex
+\setmainfont[
+    Path = ./fonts/Open Khmer School/,
+    Extension = .ttf,
+    Script = Khmer,
+    Renderer = HarfBuzz,
+    UprightFont = *-Regular,
+    BoldFont = *-Bold,
+    ItalicFont = *-Regular,
+    BoldItalicFont = *-Bold,
+    AutoFakeSlant = 0.2
+]{OpenKhmerSchool}
+```
+
+**`\khmerkbach` — AKbalthom Kbach Regular**
+
+A decorative Khmer serif used for the table of contents title (`មាតិកា`) and for subtopic and sub-subtopic headings rendered via `\khmersubtopic` and `\khmersubsubtopic`.
+
+**`\khmermoul` — Moul**
+
+The most prominent display face in the handbook. Used for chapter headings (`\khmerchapter`), lesson headings (`\khmerlesson`), ornate chapter titles (`\khmerornatetitle`), and the two-line centered header on every page.
+
+**`\khmerheader` — Ang TaPich Regular**
+
+A lighter display face used for topic headings (`\khmertopic`), formula box titles inside `\formulabox`, and the chapter-number label inside `\khmerchapterbanner`.
+
+**`\khmerpagenum` — Romnea**
+
+Used for page numbers output by `\khmernum{\thepage}` and for figure captions rendered through `\khmerphoto`. Also used in `\khmercircnum` for circled objective numbers.
+
+**`\englishfont` — Nunito**
+
+The Latin text fallback, loaded with four weights: Regular, Bold, Italic, and BoldItalic. Khmer text never uses this font directly; it is activated automatically by the script-switching system (see below) whenever a Latin or punctuation character is encountered.
+
+```latex
+\newfontfamily\englishfont[
+    Path = fonts/Nunito/,
+    UprightFont = Nunito-Regular,
+    BoldFont = Nunito-Bold,
+    ItalicFont = Nunito-Italic,
+    BoldItalicFont = Nunito-BoldItalic,
+    Extension = .ttf,
+    Script = Latin,
+]{Nunito}
+```
+
+**`\khmerhanuman` — Hanuman**
+
+Kept available as a named family for any block that explicitly needs it (`{\khmerhanuman ...text...}`). Hanuman was the original `\setmainfont` choice before OpenKhmerSchool was adopted. It is loaded at `Scale=1.1`.
+
+**`\khmersymbolfont` — DejaVu Sans**
+
+Provides the Unicode star and sparkle glyphs used by `\kstar` (★) and `\kstarfour` (✦). It is loaded *after* the default font features are cleared so that it does not inherit `Script=Khmer` or `Renderer=HarfBuzz`:
+
+```latex
+\defaultfontfeatures{} % clear Path/Script/Renderer for this font only
+\newfontfamily\khmersymbolfont{DejaVu Sans}
+\defaultfontfeatures{Path = fonts/, Script = Khmer, Renderer = HarfBuzz, HyphenChar = None}
+```
+
+DejaVu Sans ships with TeX Live, so it is reliably present regardless of which Khmer fonts are installed on the system.
+
+---
+
+## Automatic script switching
+
+The handbook uses the `ucharclasses` package to automatically switch fonts when the input stream transitions between Unicode script blocks. This means authors never have to manually wrap English words or Greek letters in font commands — the switch happens transparently.
+
+The transition hooks are defined as follows:
+
+- **Latin characters and punctuation** → switch to `\englishfont` (Nunito), then restore the previous font when the Latin run ends.
+- **Greek characters** → switch to `\khmersymbolfont` (DejaVu Sans), then restore the previous font when the Greek run ends.
+
+The saved-and-restored font is captured by reading the current `\f@encoding`, `\f@family`, `\f@series`, `\f@shape`, `\f@size`, and `\f@baselineskip` values, so the transition is fully reversible regardless of which Khmer font was active at the point of entry.
+
+<Tip>
+  Because `\setTransitionsForPunctuation` is also set to activate `\englishfont`, common punctuation marks like parentheses, colons, and periods render cleanly in Nunito even when they appear inside a Khmer paragraph. You do not need to do anything special.
+</Tip>
+
+---
+
+## Usage examples
+
+The following block shows how to invoke each named font family command directly in a LaTeX source file. In normal chapter content you will rarely need these explicitly — use the semantic heading macros instead, which apply the correct font internally.
+
+```latex
+% Chapter / lesson display headings
+{\khmermoul Chapter heading text}
+{\khmerheader Topic heading text}
+
+% Page numbers and captions
+{\khmerpagenum Page number: \khmernumraw{42}}
+
+% Forcing Latin rendering (usually automatic via script-switching)
+{\englishfont Latin text rendered in Nunito}
+
+% Star glyphs (script-switching handles these automatically too)
+\kstar        % ★ — five-point star in bacpink
+\kstarfour    % ✦ — four-point sparkle in bacpink
+
+% Subtopic / TOC font
+{\khmerkbach មាតិកា}
+
+% Explicit Hanuman block (rarely needed)
+{\khmerhanuman Hanuman text block}
+```

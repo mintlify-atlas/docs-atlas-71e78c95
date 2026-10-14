@@ -1,0 +1,184 @@
+---
+title: "Document Structure Macros: Chapters, Lessons, Topics"
+sidebarTitle: "Structure Macros"
+description: "The heading hierarchy macros defined in preamble.tex — \\khmerchapter through \\khmersubsubtopic — with their TOC behavior, font usage, and example LaTeX."
+---
+
+The Khmer Physics Handbook uses a custom heading hierarchy rather than standard LaTeX sectioning commands. All structure macros are defined in `preamble.tex` and must never be redefined per-chapter. Each macro calls `\phantomsection` before its `\addcontentsline` entry so that hyperref bookmarks point to the correct page, and each carries its own `\vspace` budget — do not add extra vertical space around them.
+
+The TOC depth is set to `5` and `secnumdepth` to `5`, meaning every level from `\khmerchapter` down to `\khmersubsubtopic` appears in the printed table of contents.
+
+---
+
+## `\khmerchapter{title}`
+
+The top-level chapter heading. It is added to the TOC as a `\section` entry and typeset centered on the page in the **Moul** display font (`\khmermoul`) at `\large` size, colored `brownheader`.
+
+<ParamField path="title" type="string">
+  The chapter heading text. This same string is inserted into the TOC and PDF bookmark.
+</ParamField>
+
+```latex
+\khmerchapter{គីនេទិចសញ្ញាណ}
+```
+
+---
+
+## `\khmerlesson{title}`
+
+The lesson heading, one level below `\khmerchapter`. It is added to the TOC as a `\subsection` entry, also centered, in `\khmermoul`/`brownheader` at `\large`.
+
+<ParamField path="title" type="string">
+  The lesson heading text. Appears in the TOC at the subsection level.
+</ParamField>
+
+```latex
+\khmerlesson{មេរៀន ១: ម៉ាញេទិក}
+\tanbgdivider
+```
+
+<Tip>
+  Place `\tanbgdivider` directly after `\khmerlesson` to insert the decorative floral separator between the heading and the lesson body.
+</Tip>
+
+---
+
+## `\khmertopic{title}`
+
+A numbered topic heading (equivalent to "1."). Added to the TOC as a `\subsubsection` entry. Typeset left-aligned (`\noindent`) in the **Ang TaPich** display font (`\khmerheader`) colored `brownheader`, with no automatic indent.
+
+<ParamField path="title" type="string">
+  The topic heading text.
+</ParamField>
+
+```latex
+\khmertopic{១. កម្លាំងម៉ាញេទិក}
+```
+
+---
+
+## `\khmersubtopic{title}`
+
+A sub-topic heading (equivalent to "1.1."). Added to the TOC as a `\paragraph` entry. Indented `0.6cm` from the left margin using `\hspace*{0.6cm}`, typeset in the **AKbalthom Kbach** font (`\khmerkbach`) colored `brownheader`.
+
+<ParamField path="title" type="string">
+  The sub-topic heading text.
+</ParamField>
+
+```latex
+\khmersubtopic{១.១. ការពណ៌នាអំពីសក្ដានុពល}
+```
+
+---
+
+## `\khmersubsubtopic{title}`
+
+The deepest heading level in the hierarchy (equivalent to "1.1.1."). Added to the TOC as a `\subparagraph` entry. Indented `1.2cm` from the left margin, typeset in `\khmerkbach`/`brownheader`.
+
+<ParamField path="title" type="string">
+  The sub-sub-topic heading text.
+</ParamField>
+
+```latex
+\khmersubsubtopic{១.១.១. ករណីពិសេស}
+```
+
+---
+
+## `\khmerornatetitle{full}{short}`
+
+An ornate chapter opener intended for the first page of a major chapter. It calls `\clearpage`, adds `full` to the TOC as a `\section` entry (and to the PDF bookmark), but renders only `short` on the page — so the display title can be a shorter, more elegant form while the full title with chapter prefix appears in navigation.
+
+The visual consists of a TikZ-drawn crescent moon and cloud icon to the left of `short`, rendered in `\khmermoul`/`\Large`/`brownheader`, followed by a scrollwork divider line with coiled end-caps and a four-petal center flourish in `brownheader`.
+
+<ParamField path="full" type="string">
+  Full title string for TOC and PDF bookmarks (e.g. the chapter number prefix included).
+</ParamField>
+
+<ParamField path="short" type="string">
+  Short display title shown on the page below the moon-and-cloud icon.
+</ParamField>
+
+```latex
+\khmerornatetitle{ជំពូកទី៤៖ អគ្គិសនី}{អគ្គិសនី}
+```
+
+<Note>
+  The `full` argument goes into `\addcontentsline` and the hyperref bookmark; `short` is what the reader sees. Use the chapter-prefix form (`ជំពូកទី N៖ ...`) for `full` so the TOC entry matches the banner.
+</Note>
+
+---
+
+## `\khmerchapterbanner{num}{title}{imgpath}`
+
+A full chapter opener block, typically used in `banners/chapterNbanner.tex`. It calls `\clearpage`, adds an entry to the TOC as `\section` with the automatically composed string `ជំពូកទី#1៖ #2`, then renders:
+
+1. A purple (`primary`) rounded-corner box (2.3 cm × 1.9 cm) containing the word `ជំពូក` in `\khmerheader\small` and the chapter digit in `\fontsize{26}{26}\bfseries`.
+2. The chapter title in `\khmermoul\Large\color{brownheader}` beside it.
+3. A full-width photo in a `tcolorbox` with a 2pt `primary` border at 4mm arc radius, cropped to 7.5 cm tall with `keepaspectratio`.
+
+<ParamField path="num" type="Khmer digit string">
+  The chapter number as a Khmer digit (e.g. `៤`). Displayed large inside the purple badge and appended to `ជំពូកទី` in the TOC entry.
+</ParamField>
+
+<ParamField path="title" type="string">
+  The chapter title, displayed in Moul next to the purple badge and used in the TOC entry.
+</ParamField>
+
+<ParamField path="imgpath" type="file path">
+  Path to the chapter banner image (e.g. `img/chapter3banner.jpg`). Resolved via the `\graphicspath` set to `images/` and `img/`.
+</ParamField>
+
+```latex
+\khmerchapterbanner{៣}{អគ្គិសនីនិងម៉ាញេទិច}{img/chapter3banner.jpg}
+```
+
+---
+
+## `\khmercircnum{n}`
+
+Renders a circled digit in the `primary` color, styled like the circled numbers ①②③ used in objective lists. Implemented with a TikZ `circle` node (`draw=primary`, `line width=1pt`, `minimum size=17pt`) containing `\khmerpagenum\khmerdigit{#1}` in `\small\bfseries`.
+
+<ParamField path="n" type="integer 0–9">
+  A single digit (0–9). Passed directly to `\khmerdigit` — only single digits are supported.
+</ParamField>
+
+```latex
+\khmercircnum{1} ស្វែងយល់ពីច្បាប់ Faraday\\
+\khmercircnum{2} គណនា EMF ដែលបណ្ដាលឱ្យ\\
+\khmercircnum{3} ពណ៌នាអំពី Lenz's law
+```
+
+---
+
+## `\points{text}`
+
+An inline highlight box for key terms or short phrases that the reader should retain. Implemented with `\fcolorbox{bacpurple!60}{bacpinklight}` around `\textcolor{bacpurple}{\textbf{#1}}` — a faint pink background with a light purple border and bold purple text.
+
+<ParamField path="text" type="string">
+  The key term or short phrase to highlight. Keep to a word or short phrase; this is an inline element, not a block.
+</ParamField>
+
+```latex
+ច្បាប់ Faraday បង្ហាញថា \points{EMF} ដែលកើតឡើងក្នុងសៀគ្វី
+ស្មើនឹង \points{អត្រាការផ្លាស់ប្ដូរ} នៃ flux ម៉ាញេទិក។
+```
+
+---
+
+## `\tanbgdivider`
+
+A decorative floral section separator, drawn entirely in TikZ using the `tanbg` color (`#D7CBB5`). The shape consists of two horizontal rules (line width 1.5pt, round caps) extending left and right from a central diamond (filled `tanbg`, `rounded corners=1.5pt`), each terminated with a filled circle at both ends.
+
+Takes no arguments. Place it directly after a `\khmerlesson` heading to visually separate the heading from the lesson body content.
+
+```latex
+\khmerlesson{មេរៀន ២: អាំងឌុចស្យុងអេឡិចត្រូម៉ាញេទិក}
+\tanbgdivider
+
+ខ្លឹមសារនៃមេរៀន...
+```
+
+<Note>
+  `\tanbgdivider` is purely decorative and carries no TOC or bookmark entry. It must appear **after** the `\khmerlesson` call, not before it.
+</Note>

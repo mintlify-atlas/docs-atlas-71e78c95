@@ -1,0 +1,162 @@
+---
+title: "Khmer Physics Handbook Folder Structure and File Roles"
+sidebarTitle: "Folder Structure"
+description: "An annotated overview of every directory and key file in the handbook repository, from main.tex and preamble.tex to chapters, banners, fonts, and images."
+---
+
+The repository is a single XeLaTeX document that compiles to one PDF. There are no package managers, no build systems beyond latexmk, and no generated source code — every file either feeds directly into the PDF or supports the contributor workflow. Understanding where things live will save you from editing the wrong file or adding a macro in the wrong place.
+
+## Repository tree
+
+```text
+.
+├── main.tex              # The boss — assembles everything
+├── preamble.tex          # Fonts, colors, macros, page style. The shared brain.
+├── build.sh / build.cmd  # One command — latexmk does the passes for you
+├── chapters/
+│   ├── chapter1.tex      # Lesson stuff
+│   ├── chapter2.tex      # More lesson stuff
+│   └── chapter3.tex      # ម៉ាញេទិក shenanigans — Lorentz force, induction, RL, LC
+├── banners/
+│   ├── chapter1banner.tex # Fancy opening page
+│   ├── chapter2banner.tex # Another fancy opening page
+│   └── chapter3banner.tex # The dramatic entrance (sakura optional)
+├── fonts/                # Khmer + Latin typefaces
+├── img/                  # Photos, figures, vibes (Git LFS tracked)
+├── miscs/                # Side quests (introduction, etc.)
+├── .latexmkrc            # Makes `latexmk main.tex` just work (xelatex)
+├── .gitignore            # Keeps the LaTeX junk out
+├── .gitattributes        # img/* → LFS; *.sh + .githooks/** stay LF
+├── .githooks/            # commit-msg gate + LFS pre-push hook
+├── AGENTS.md             # Operator notes for AI agents (build, macros, gotchas)
+├── CHANGELOG.md          # The whole saga, in order
+├── CONTRIBUTING.md       # How to join the club 🤫
+└── CODE_OF_CONDUCT.md    # Be warm or be gone
+```
+
+---
+
+## Core document files
+
+### `main.tex` — the assembler
+
+`main.tex` is the entry point for the entire document. It does not contain physics content of its own — its job is to pull everything else together in the right order. The assembly pattern for each chapter is:
+
+```latex
+\input{preamble.tex}
+
+% ... for each chapter N:
+\input{banners/chapterNbanner.tex}
+\input{chapters/chapterN.tex}
+\clearpage
+```
+
+The `\clearpage` between chapters ensures that floats (figures, tables) are flushed before the next chapter begins. You touch `main.tex` only when adding a new chapter (two `\input` lines per chapter) or adjusting top-level document settings.
+
+### `preamble.tex` — the shared brain
+
+`preamble.tex` is where all shared definitions live: font loading via `fontspec` (with `Script=Khmer, Renderer=HarfBuzz`), color definitions (`bacpink`, `bacpurple`, `khmerred`, `primary`, `boxbg`, `boxframe`, `brownheader`, `wavered`, `waveblue`, `wavepurple`, and others), and every macro used across chapters (`\khmerphoto`, `\formulabox`, `\defbox`, `\quickformula`, `\khmertopic`, `\khmerlesson`, `\khmerchapter`, `\khmervideobox`, `\tanbgdivider`, `\khmernumraw`, `\khmernum`, and more).
+
+The rule is firm: **never define a new macro inside a chapter file**. If a new box style, color, or command is needed, it goes in `preamble.tex` so every chapter can use it. Redefining an existing macro per-chapter will silently override it for the rest of the document.
+
+---
+
+## `chapters/` — lesson content
+
+Each `chapterN.tex` file contains the physics content for one chapter — prose, equations, figures, and structured headings using the macros defined in `preamble.tex`. The current chapters are:
+
+| File | Contents |
+|---|---|
+| `chapter1.tex` | Kinetic theory |
+| `chapter2.tex` | Waves and interference |
+| `chapter3.tex` | Electromagnetism: Lorentz force, electromagnetic induction, self-induction, RL and LC circuits |
+
+When writing or editing chapter content, work only in the relevant `chapterN.tex`. Use the macros from `preamble.tex` — `\khmertopic`, `\khmersubtopic`, `\formulabox`, `\khmerphoto`, etc. — rather than raw LaTeX equivalents. Equation and figure numbers run continuously through the whole book; do not restart numbering per chapter or per lesson.
+
+---
+
+## `banners/` — chapter opening pages
+
+Each `chapterNbanner.tex` produces the decorative full-page opener for its chapter, using `\khmerchapterbanner`, `\khmerornatetitle`, and `\khmerbannerphoto`. These are the "dramatic entrance" pages with the sakura aesthetic. They are kept separate from the chapter body files so the opening design can be revised without touching lesson content.
+
+When adding a new chapter, you must create both a banner file and a content file, and add both `\input` lines to `main.tex`.
+
+---
+
+## `fonts/` — typefaces
+
+The `fonts/` directory holds the Khmer and Latin font files used by the handbook:
+
+- **Romnea** — Khmer page numbers (`khmerpagenum`)
+- **Ang TaPich** — Khmer headers (`khmerheader`)
+- **Moul** — Khmer chapter titles (`khmermoul`)
+- **Nunito** — Latin fallback (`\englishfont`)
+
+These files must be **installed onto the system** before building. XeLaTeX resolves fonts through the OS font registry, not by scanning the repository directory. See the [Prerequisites](./prerequisites) page for platform-specific installation steps.
+
+<Warning>
+  Do not reference font files using a path inside the document (e.g., `\setmainfont[Path=fonts/]{Moul}`). The project loads fonts by name, which requires them to be registered system-wide. Path-based loading is fragile and not used here.
+</Warning>
+
+---
+
+## `img/` — photos and figures (Git LFS)
+
+All images — photographs, hand-drawn scans, and exported vector graphics — live in `img/` and are tracked by **Git LFS**. Git LFS stores the actual binary blobs on a remote server and keeps only a small pointer file in the git history, which keeps clone size manageable for a book with dozens of figures.
+
+Images in the document body are always included through the `\khmerphoto` macro, never via bare `\includegraphics`. Filenames should be descriptive and lowercase.
+
+<Warning>
+  If your `img/` files are roughly 130 bytes each and read like hash references, you have LFS pointer files instead of real images. Run `git lfs pull` to fetch the actual blobs. The book will not build correctly with pointer files in place of images.
+</Warning>
+
+---
+
+## `miscs/` — supplementary material
+
+The `miscs/` directory holds content that sits outside the main chapter sequence, such as the book introduction. Files here are `\input`-ed from `main.tex` at the appropriate position in the document flow.
+
+---
+
+## Build and configuration files
+
+### `build.sh` / `build.cmd`
+
+The one-command build scripts for Linux/macOS and Windows respectively. Both check for `latexmk` and use it if found; otherwise they fall back to running `xelatex main.tex` twice manually. On any build error the terminal stays open so you can read the output before the window closes.
+
+### `.latexmkrc`
+
+Configures `latexmk` for this project. The critical setting is `$pdf_mode = 5`, which selects XeLaTeX as the engine. This means `latexmk main.tex` works without any flags — no `-xelatex` needed. It also sets the XeLaTeX invocation flags (`-interaction=nonstopmode -file-line-error -synctex=1`) and lists the extra file extensions to delete on `latexmk -C`.
+
+### `.gitignore`
+
+Excludes the auxiliary files XeLaTeX produces during a build: `*.xdv`, `*.fls`, `*.fdb_latexmk`, `*.synctex.gz`, `*.aux`, `*.log`, `*.toc`, `*.out`, and IDE directories (`.rider/`, `.idea/`). Notably, `main.pdf` is **not** in `.gitignore` — the compiled PDF is committed to git by design.
+
+---
+
+## Repository governance files
+
+### `.gitattributes`
+
+Controls two things:
+
+1. **Git LFS tracking** — `img/*` and common image extensions (`*.jpg`, `*.jpeg`, `*.png`, `*.pdf` and others) are set to `filter=lfs diff=lfs merge=lfs -text`. Any new image file dropped into `img/` is automatically handled by LFS.
+2. **Line-ending enforcement** — `*.sh` files and everything under `.githooks/**` are pinned to `eol=lf`. This matters on Windows: with `core.autocrlf=true`, a CRLF shebang line (`#!/usr/bin/env bash\r`) makes bash silently refuse to execute the hook, disarming the commit gate without any error message.
+
+### `.githooks/`
+
+Contains two Git hooks wired in via `core.hooksPath = .githooks`:
+
+- **`commit-msg`** — enforces the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) format. A commit message that does not match `<type>(<scope>): <description>` is rejected with an explanatory message. Valid types are `build`, `chore`, `ci`, `docs`, `feat`, `fix`, `perf`, `refactor`, `revert`, `style`, and `test`. Breaking changes use `!` before the colon and a `BREAKING CHANGE:` footer.
+- **`pre-push`** — an LFS hook that ensures LFS objects are uploaded before the push goes through, preventing a push that would leave dangling LFS pointer references on the remote.
+
+---
+
+## Documentation and meta files
+
+| File | Role | When you touch it |
+|---|---|---|
+| `AGENTS.md` | Operator notes for AI agents: build commands, macro inventory, Khmer-specific traps, figure/equation numbering state | When the build process, macros, or numbering state changes |
+| `CHANGELOG.md` | Full project history in Conventional Commits order, one entry per annotated tag | Every commit that gets an `alpha.N` tag |
+| `CONTRIBUTING.md` | Step-by-step guide for new contributors: LFS setup, font installation, branch workflow, PR process, code conventions | When contributor workflow or conventions change |
+| `CODE_OF_CONDUCT.md` | Community standards | Rarely — only if community policy needs updating |

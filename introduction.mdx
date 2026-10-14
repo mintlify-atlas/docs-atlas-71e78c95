@@ -1,0 +1,70 @@
+---
+title: "Khmer Physics Handbook: Open-Source Grade 12 Physics in Khmer"
+sidebarTitle: "Introduction"
+description: "Learn what the Khmer Physics Handbook is, why it exists, and what topics it covers across its three chapters for Cambodian Grade 12 students."
+---
+
+The Khmer Physics Handbook is a Grade 12 physics textbook written entirely in Khmer, with Khmer numerals used throughout — in page numbers, section headings, figure labels, and equations. It is typeset with XeLaTeX and dressed in a custom sakura theme: rounded boxes, floral dividers, and a palette deliberately chosen to make the book feel warm and inviting rather than institutional. It exists for one reason: Cambodian students deserve a high-quality physics resource in their own language, and they should never have to pay for it.
+
+## Why It Exists
+
+Physics education in Cambodia has long relied on materials that are either in a foreign language, visually austere, or locked behind a paywall. This project compresses 48 volumes of syllabus content into pages students will actually want to open. Every design decision — the sakura aesthetic, the Khmer numeral system, the open license for compiled PDFs — was made with the student in mind.
+
+<Note>
+  The Khmer Physics Handbook is built exclusively with **XeLaTeX**. pdfLaTeX cannot handle Khmer OpenType shaping and will fail. The engine is non-negotiable.
+</Note>
+
+## What It Covers
+
+The handbook currently compiles to a single `main.pdf` of **83 pages** across three chapters. Figure numbering runs continuously from រូបទី១ through រូបទី៤១, and equations run from (១) through (២៩) — no per-chapter restarts.
+
+<CardGroup cols={3}>
+  <Card title="Chapter 1 — Kinetic Theory" icon="atom">
+    The warm-up chapter. Covers the kinetic theory of gases and its deep-cut derivations.
+  </Card>
+  <Card title="Chapter 2 — Waves" icon="wave-square">
+    Waves and interference: constructive, destructive, and everything in between.
+  </Card>
+  <Card title="Chapter 3 — Electromagnetism" icon="bolt">
+    អគ្គិសនីនិងម៉ាញេទិច — four lessons complete: magnetism, electromagnetic induction, self-inductance with RL and LC circuits, and the opening of alternating current (Lesson 4). Lesson 5 follows.
+  </Card>
+</CardGroup>
+
+## Current State
+
+The latest tagged release is `v1.0.0-alpha.15`. Chapter 3 is the active frontier: Lessons 1–3 are fully written with derivations, photos, and vector graphics; Lesson 4 (ចរន្តឆ្លាស់ / alternating current) has just opened. The roadmap for what comes next — AC circuit parameters, RMS values, impedance, power factor, and resonance — is tracked in the changelog.
+
+## The Build Output
+
+The entire book assembles into one file:
+
+```text
+main.pdf   ← the deliverable; 83 pages, checked into the repo (not LFS)
+```
+
+Building is one command on any platform:
+
+```bash
+# Linux / macOS
+bash build.sh
+```
+
+```bat
+rem Windows
+build.cmd
+```
+
+Both scripts use `latexmk`, which handles the two-pass compilation needed for the table of contents and page references automatically. The `.latexmkrc` at the root of the repository pins the engine to XeLaTeX, so no `-xelatex` flag is required.
+
+## The Collaboration
+
+This handbook was built by one tired human, three AIs, and a level of sleep deprivation that should probably be studied by a university:
+
+- **Gemini** — wrote the bulk of the content and the complete syllabus structure
+- **Kimi** — produced the TikZ graphs and handled most of the late-night debugging; occasionally invents Khmer political history mid-sentence
+- **Claude** — formats, cites, and flags hallucinations; mostly gets overruled by vibes
+- **The human** — grass-fed, free-range, artisanal, and the only one who has to explain any of it to the Ministry of Education
+
+<Tip>
+  Want to contribute? You do not need to be a LaTeX wizard or a physics professor. You need to care a little and learn the rest. See the [Contributing guide](https://github.com/airiharuki/physics_textbook/blob/main/CONTRIBUTING.md) and [AGENTS.md](https://github.com/airiharuki/physics_textbook/blob/main/AGENTS.md) for the full workflow, macro inventory, and Khmer-specific typesetting conventions.
+</Tip>

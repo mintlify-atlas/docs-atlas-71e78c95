@@ -1,0 +1,263 @@
+---
+title: "Changelog: Khmer Physics Handbook Release History"
+sidebarTitle: "Changelog"
+description: "Every tagged release of the Khmer Physics Handbook from v1.0.0-alpha.1 through alpha.15, with what was added, changed, and fixed in each."
+---
+
+The Khmer Physics Handbook follows [SemVer 2.0.0](https://semver.org/spec/v2.0.0.html) for version tags and [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) for commit messages. From Lesson 2 onward, every commit is also a tagged release.
+
+<Note>
+  Every commit in this repository is a tagged release. Annotated tags run `v1.0.0-alpha.N` in commit order and each one has its own entry below. The full authoritative history — every mistake, victory, and 2am commit, in order — lives in [CHANGELOG.md](https://github.com/airiharuki/physics_textbook/blob/main/CHANGELOG.md) on GitHub.
+</Note>
+
+---
+
+## Unreleased
+
+Next up: AC circuit parameters, effective values (RMS), and sinusoidal waveforms.
+
+---
+
+## v1.0.0-alpha.15 — 2026-10-12
+
+Lesson 4 opens its doors: the War of Currents (Edison vs. Westinghouse), AC vs. DC, and long-distance power transmission via transformers. Plus Moul font polishing for LC energy box titles.
+
+### Added
+
+- **Chapter 3 · Lesson 4 (ចរន្តឆ្លាស់ / Alternating Current) — opened:**
+  - `\khmerlesson` heading and `\tanbgdivider` floral divider
+  - Historical introduction on DC vs. AC: Thomas Edison and George Westinghouse debate (១៨៨០), sinusoidal waveform advantages, and transformers (`ត្រង់ស្វូ`) for high-voltage long-distance transmission
+  - Image `img/alternator.png` staged via Git LFS
+
+### Changed
+
+- **Typesetting fix:** switched `\formulabox` title for the LC circuit energy summary to `\khmermoul` (`fonttitle=\normalfont`) to bypass the Ang TaPich shaping bug on `កន្សោម`
+- **Docs:** updated `AGENTS.md` and `README.md` with TeX Live 2026 notes, circuitikz guidelines, and cache cleaning instructions
+- `main.pdf` rebuilt: **83 pages**, clean under XeLaTeX
+
+---
+
+## v1.0.0-alpha.14 — 2026-10-09
+
+The LC circuit breathes to life: capacitor charging, Kirchhoff discharge derivation, second-order ODE, stacked vector oscillation curves in TikZ, and total electromagnetic energy conservation. 🌸
+
+### Added
+
+- **Chapter 3 · Lesson 3 continued (LC circuit & electromagnetic oscillations):**
+  - **សៀគ្វី LC ពេលផ្ទុកថាមពល (៥.១):** SPDT switch connection to terminal `a` shown in vector CircuitikZ (រូបទី៣៩), charging capacitor to Q₀ = CΕ (២៣), electrostatic energy storage Eₑ = ½CΕ² (២៤), and initial conditions box for t = 0
+  - **សៀគ្វី LC ពេលផ្ទេរថាមពល (៥.២):** SPDT switch connection to terminal `b` isolating the closed LC loop (រូបទី៤០), Kirchhoff loop derivation −v_C + v_L = 0 with discharging condition i = −dq/dt, second-order ODE d²q/dt² + (1/LC)q = 0 (២៥), harmonic oscillator analogy, general charge solution q(t) = q_max cos(ωt + φ) (២៦), and instantaneous current expression i(t) = −ωq_max sin(ωt + φ) = −I_max sin(ωt + φ) (២៧)
+  - **Stacked Vector Oscillation Graph (រូបទី៤១):** custom dual-subplot TikZ figure plotting charge q(t) in `brownheader` and current i(t) in `primary`, with quarter-period vertical alignment dashed lines (T/2, T, 3T/2, 2T) illustrating phase quadrature
+  - **Natural Period / Time Constant:** boxed τ_LC = T = 2π√(LC) (២៨) with parameter glossary
+  - **ថាមពលនៃសៀគ្វី LC:** total electromagnetic energy formula E = E_L + E_C = ½Li² + ½Cv² (២៩), dedicated `\formulabox` for quantities and SI units, and `\defbox` on total energy conservation in an ideal LC oscillator
+
+---
+
+## v1.0.0-alpha.13 — 2026-10-08
+
+RL circuit current growth and decay curves complete with vector plots and full derivations. 🌸
+
+### Added
+
+- **Chapter 3 · Lesson 3 continued:**
+  - **ក្រាបបកស្រាយពេលបិទកុងតាក់ (៤.១):** numerical data table (t = τ…5τ) and vector TikZ exponential charging curve beside រូបទី៣៦
+  - **ករណីបើកកុងតាក់ S₁ / បិទកុងតាក់ S₂ (៤.២):** full Kirchhoff loop derivation Ri + L di/dt = 0, separation of variables, integration helper box, and boxed solution i(t) = I_m e^(−t/τ_RL) (២២) with symbol glossary
+  - **ក្រាបបកស្រាយពេលផ្ទេរចរន្ត (៤.២):** numerical data table and vector TikZ exponential decay curve beside រូបទី៣៧
+
+---
+
+## v1.0.0-alpha.12 — 2026-10-08
+
+Self-inductance, magnetic energy, non-inductive coils, and the RL current rise derivation land in Lesson 3. 🌸
+
+### Added
+
+- **Chapter 3 · Lesson 3 continued:**
+  - **អាំងឌុចតង់ផ្ទាល់ (១.២):** coil self-inductance derivation from NΦ = Li (១៥) to L = μ₀N²A/l (១៦), instantaneous and average self-induced EMFs e = −L di/dt (១៧) and E = −L ΔI/Δt (១៨) beside រូបទី៣៣ (`magneticfluxviasolenoid.png`)
+  - Styled definition box for inductance in a dedicated `\formulabox`
+  - **សៀគ្វីគ្មានអាំងឌុចតង់ (២.៤):** non-inductive bifilar winding beside figure រូបទី៣៤ (`mortysolenoid.png`)
+  - **ថាមពលម៉ាញេទិច (២.៥ / ៣):** magnetic energy stored in an inductor derived via calculus from power p = Li di/dt to boxed E_L = ½LI² (២០) with symbol glossary and field storage note
+  - **សៀគ្វី RL (៤ / ៤.១):** closing-switch current growth derived from Kirchhoff's loop rule −Ε + V_L + V_R = 0, variable separation, integration helper formula box, to boxed i(t) = I_m(1 − e^(−t/τ_RL)) (២១) with time constant τ_RL = L/R
+  - **Project infrastructure:** `AGENTS.md` operator notes for build workflow, font stack, design system, and Khmer typesetting gotchas; GitHub issue templates under `.github/ISSUE_TEMPLATE/` (`content_or_typo.md`, `build_or_rendering.md`, `feature_or_diagram.md`, and `config.yml`)
+
+### Changed
+
+- **Modernized `\defbox`:** aligned with `formulabox` aesthetic using soft `boxbg` fill, sharp corners, and a 3pt `bacpink` left accent bar
+- `main.pdf` rebuilt: **74 pages**, clean under XeLaTeX
+
+---
+
+## v1.0.0-alpha.11 — 2026-10-06
+
+Boxes find a new face, and the first Lesson 3 circuit diagram turns up.
+
+### Added
+
+- **Chapter 3 · Lesson 3 · ២.១ experiment shown:** the closing-switch paragraph now sits beside `img/autoinductionexperiment.png` (រូបទី៣១), replacing the temporary raw `circuitikz` sketch; caption follows the book pattern
+
+### Changed
+
+- `\formulabox` and `\khmervideobox` re-skinned: soft wash panel stays; the old framed-chip title bar is replaced by a 3pt `primary` accent bar, sharp corners, and an inline coloured title with a hairline rule
+- `.latexmkrc` repair: the live variable for XeLaTeX is `$xelatex`, not `$pdflatex`, so `latexmk main.tex` now just works (nonstopmode + file-line-error + synctex)
+
+### Fixed
+
+- `\usepackage{qrcode}` had been silently removed while adding `circuitikz`; restored, then `circuitikz` was dropped again once the photo covered the figure
+- `main.pdf` rebuilt: **68 pages**, clean
+
+---
+
+## v1.0.0-alpha.10 — 2026-10-05
+
+Lesson 3 cracks open, and its derivations look like Lesson 2's: steps in `flalign*`, results boxed, Khmer numbers outside math.
+
+### Added
+
+- **Chapter 3 · Lesson 3 — មេរៀនទី៣៖ អូតូអាំងឌុចស្យុង, opened:**
+  - Lesson intro paragraph and the `\khmerlesson` + `\tanbgdivider` banner, plus topic ១ heading (mutual induction / linking inductance)
+  - Mutual-induction block: the two-coils figure `mutualinductance.png` placed left of its caption (រូបទី៣០) beside the bullet list and e₂ = −N₂ dΦ_B2/dt (៧)
+  - Derivation chain (N₂Φ₂ = M₂₁i₁ (៨)) → នាំឱ្យ substitution → boxed e₂, E₂, N₁Φ₁ = M₁₂i₂, boxed e₁, E₁, and boxed M (៩–១៤)
+  - Full symbol glossary for M, M₁₂, M₂₁, fluxes, turns, currents, ΔI, Δt, rates, and the EMFs
+
+### Changed
+
+- Generator result e(t) = NBAω sin(ωt) (៦) is now boxed like the rest of the key results
+- `main.pdf` rebuilt: **67 pages** — chapter 3 at 2 of 5 lessons plus the Lesson 3 opener
+
+---
+
+## v1.0.0-alpha.9 — 2026-10-04
+
+Lesson 2 closes out. Generators, motors, and the whole book now knows what a minus sign is for. 🌸
+
+### Added
+
+- **Chapter 3 · Lesson 2 finished:**
+  - ជនិតាអគ្គិសនី (៤.១) — spinning magnet induces a sinusoidal EMF, e(t) = −N dφ/dt = NBAω sin(ωt) (សញ្ញាត្រាម៦) beside រូបទី២៨, with the full symbol glossary and E_max = E_m = NBAω
+  - ម៉ូទ័រអគ្គិសនី (៤.២) — the motor as an electric motor: same coil, same field, force instead of induction, with រូបទី២៩
+  - Lesson 2 figure run now complete at ២០–២៩; equations at (១)–(៦)
+- Release artifact published as a GitHub release asset: `PHY - G12 - Physics Handbook (2026 Version - 1.0.0-alpha.9).pdf`
+
+### Changed
+
+- Generator derivation follows the house pattern for multi-step work: `flalign*` for the steps, result and its Khmer number in a plain `center` — keeps ៦ out of math mode
+- Generator figure printed beside its derivation at 0.55/0.40 minipage widths; motor figure stacked below its paragraph at `0.75\linewidth`, matching figure ២ៗ (same 1.42:1 aspect)
+- `main.pdf` rebuilt: **64 pages** — chapter 3 lesson 2 complete, 2 of 5 lessons done
+
+### Fixed
+
+- The electric-motor subsection briefly shipped as a heading with a corpse attached — the ៤.២ heading slipped into an early alpha.9 commit with no body (an editor buffer overwrite lost the paragraph); this tag includes the restored paragraph and the correctly balanced heading
+- Stale figure pointers `រូបទី៨` / `រូបទី៩` retargeted to រូបទី២៨ / រូបទី២៩ so the prose and the continuous numbering agree
+- `ម៉ាញេទិច` → `ម៉ាញេទិក` in the new generator prose and symbol list
+
+<Note>
+  The first v1.0.0-alpha.9 cut shipped the motor heading with no body; the tag was re-cut after restoring it. v1.0.0-alpha.10 was folded back into alpha.9 and its tag dropped.
+</Note>
+
+---
+
+## v1.0.0-alpha.8 — 2026-10-04
+
+The minus sign explained itself, the eddy currents swirled in, and the book grew a video box.
+
+### Added
+
+- **Chapter 3 · Lesson 2 continued:**
+  - ច្បាប់ឡិនទី២ (២.២) — all four magnet-motion cases, with the pull-the-magnet-away diagram as រូបទី២៦
+  - ចរន្តភូកូល / ចរន្តអេឌី (៣) — eddy currents in a conductor, heating the metal and opposing the change, beside រូបទី២៧
+  - ជនិតានិងម៉ូទ័រអគ្គិសនី (៤) heading opened, with `electricgenerator.png` and `electricmotor.png` staged for it
+- **`\khmervideobox{VIDEO}{TITLE}{CAPTION}`** in `preamble.tex` — a clickable YouTube link plus an auto-generated QR code (2.6 cm) in a box that reuses the Faraday box's exact palette (`boxbg`/`boxframe` fill, `primary` title bar, 1pt rule, 3mm radius); takes a bare video ID or a full URL; breakable, so long captions split instead of overflowing
+- `qrcode` package added to the build (verified working under XeLaTeX)
+- New images: `lenzlaw1.png`, `lenzlawdiagram2.png`, `eddycurrentdiagram.png`
+
+### Changed
+
+- Figure ២៦ printed at `0.95\linewidth` (3.18:1 strip — full width costs only ~5.1 cm of height); figure ២៧ at `0.75\linewidth` (1.42:1 diagram — the largest size that still leaves a usable amount of text on the page); both sources are 6250 px wide, so quality was never the constraint
+- `main.pdf` rebuilt: **63 pages** — Lesson 2 still in progress
+
+### Fixed
+
+- Raw `&` in the new "Electric Generators & Electric Motors" topic title blew up as a misplaced alignment tab (and poisoned `main.toc` on the next pass) — now escaped
+
+---
+
+## v1.0.0-alpha.1 — 2026-09-25
+
+Lesson 2 lands in full — and for the first time every single picture in the book knows its own number.
+
+### Added
+
+- **Chapter 3 · Lesson 2 (Faraday's law & induction) — complete:**
+  - Faraday portrait + intro (រូបទី២០) and both experiments with photos (រូបទី២១, រូបទី២២)
+  - ភ្លុចម៉ាញេទិក: Φ_B = B⃗ · A⃗ = BA cos α = B⊥A (សញ្ញាត្រាម១), symbol glossary, flux figure and the three cases (ក/ខ/គ)
+  - ច្បាប់ផារ៉ាដេ: E = −N ΔΦ_B/Δt (សញ្ញាត្រាម២), Δt → 0 note, e(t) = −N dΦ_B/dt (សញ្ញាត្រាម៣)
+  - Flux-change cases table (magnet & coil, expanding coil, rotating loop) as a native-width figure
+  - កម្លាំងអគ្គិសនីចលករអាំងឌ្វីក្នុងខ្សែចម្លង (១.៥): moving rod in a field, |E| = |ΔΦ_B|/Δt = BΔA/Δt = B·LΔx/Δt → |E| = Blv (សញ្ញាត្រាម៤) beside the rod figure (រូបទី២៤)
+  - Ohm's law tie-in V = |E| = RI and the circuit-current box I = |E|/R (សញ្ញាត្រាម៥) in a titled `formulabox`
+- **Every Chapter 3 figure now has a caption number** — ១ through ២៤, photos and hand-built TikZ panels alike, with ក./ខ./គ. where panels genuinely belong together
+- New images: `faradayexperiment1.jpg`, `faradayexperiment2.jpg`, `magflux.jpg`, `magneticfluxcases.png`, `magneticrod.jpg`
+
+### Changed
+
+- Equation numbering continues the book-wide (១)→(១២) sequence into Lesson 2, now running through (៥)
+- `main.pdf` rebuilt: **60 pages** — chapter 3 lesson 2 closed out, 2 of 5 lessons done
+- Repo remote migrated from token-in-URL HTTPS to SSH (`core.sshCommand` pinned to `~/.ssh/githubkey`)
+- `.rider/` added to `.gitignore` (JetBrains config, like `.idea/` before it)
+
+### Fixed
+
+- Equation labels were sitting inside math mode, so Khmer numerals fell back to `cmr12` — "Missing character: There is no ២ in font cmr12!" gone
+- Corrupted `magfield.jpg` figure block repaired
+- Terminology guardrail: `កម្មន្ត` stays `កម្មន្ត` (no more quiet swaps with `កម្លាំង`)
+- Khmer terms normalized chapter-wide: `ម៉ាញេទិក` (not `ម៉ាញេទិច`), `ផ្ទៃ` (not `ផ្ទឃ`), `ទម្រ` (not `ទ្រមេ`) — the OCR and the AI finally agree
+- Stale figure cross-reference `រូបទី៤` retargeted to `រូបទី២៤` so continuous numbering and the prose match
+- OCR caption garble normalized for the new flux/EMF figures
+
+---
+
+## 0.1-alpha-1 — 2026-09-25
+
+The first tagged drop. A beta PDF went out into the world. 🌸
+
+### Added
+
+- **Chapter 3 · Lesson 1 (magnetism) — content, in full:**
+  - Fields from a straight wire, circular loop, and solenoid (μ₀ = 4π×10⁻⁷ T·m/A)
+  - Lorentz force and charged-particle trajectories (F_B = |q|vB, R = mv/|q|B)
+  - Force on a current-carrying wire (F_B = BIL)
+  - Force between parallel wires (F = μ₀I_aI_bL / 2πd)
+  - Rotating-frame motor application (៣.៤) with figure
+  - Magnetic deflection of charged particles (α = |q|Bl/mv) — ៤.១–៤.៣ with figures
+  - Mass spectrograph (m = q(RB)²/2V) — ៤.៤ with the aligned energy derivation
+- Equation numbering standardized (១)→(១២) across the book; key results boxed
+- New figures: orbit radius, helix trajectory, wire forces, parallel-wire demos, motor, deflection, mass spectrograph
+- Project docs: CONTRIBUTING (including the secret club 🤫 + Git LFS guide), CODE_OF_CONDUCT, refreshed README, `.latexmkrc`
+
+### Changed
+
+- Build: XeLaTeX under **latexmk** (`build.sh` / `build.cmd`), prerequisite checks and keypress-safe error handling
+- Font stack: **Open Khmer School** with automatic Latin/Greek/punctuation fallback
+- Images migrated to Git LFS; solenoid render replaced with a JPG
+- Repo hygiene: evicted IDE config and MCP cruft, weekly backup commits
+
+### Fixed
+
+- Missing `}` and stray undefined symbol breaking the build
+- `mv_^2` typo that broke the `flalign` derivation (twice — it's cursed)
+- Minipage side-by-side layouts resolved
+- OCR garble normalization: `ម៉ាញេទិក`, `សូលេណូអុីត`, `វ៉ិចទ័រ` — standardized, non-negotiable
+
+---
+
+## Earlier History (Pre-Release)
+
+The following entries come from the raw git history before the first formal tag.
+
+| Date | Milestone |
+|---|---|
+| 2026-09-19 | Chapter 3 begins: circular-loop field, solenoid render, build unblocked |
+| 2026-09-07 | Chapter 3 scaffolding; weekly upload backups become a habit |
+| 2026-09-05 | Chapter 2 finished; placeholder header finally past G11 |
+| 2026-09-03 | Sound interferences; the `\defbox` macro enters the chat |
+| 2026-09-01 | Side-by-side minipages actually work; compiled PDFs shipped |
+| 2026-08-30 | Chapter 2 wave diagrams; chapter 3 banner; build scripts born |
+| 2026-08-28 | The ice-cold beginnings: repo, LICENSE (PDFs shareable for education), README with badges, Khmer numerals everywhere |

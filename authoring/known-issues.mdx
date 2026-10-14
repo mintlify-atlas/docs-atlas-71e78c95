@@ -1,0 +1,162 @@
+---
+title: "Known Issues and Workarounds for the Khmer Physics Handbook"
+sidebarTitle: "Known Issues"
+description: "All documented bugs, quirks, and their workarounds: Khmer numeral fallback in math mode, stale aux files, LFS pointer files, CRLF hooks, and more."
+---
+
+This page catalogues every known bug and environmental quirk in the Khmer Physics Handbook build system. Most issues have deterministic fixes; a couple are genuinely cursed. The list is drawn directly from README.md and AGENTS.md — nothing is invented here.
+
+<Note>
+  **The most common gotcha is stale auxiliary files.** If a build is interrupted mid-run — by Ctrl-C, a power cut, or a crash — it leaves a truncated `main.out` or `main.toc` on disk. The very next `latexmk` invocation reads that poisoned file and dies immediately with a `Runaway argument` error at the hyperref bookmarks. The fix is always the same: run `latexmk -C main.tex` to wipe all auxiliary files, then rebuild from scratch.
+</Note>
+
+<AccordionGroup>
+
+<Accordion title="Khmer numerals render as Latin inside math mode">
+
+**Cause:** XeLaTeX switches to the `cmr12` Latin font inside `$...$` for any character that the math font does not cover. Khmer Unicode digits fall into this gap, so a label like `(២)` placed inside a math environment silently drops the glyph and emits a warning.
+
+**Symptom in build log:**
+```
+Missing character: There is no ២ in font cmr12!
+```
+
+**Workaround:** Place all `(NN)` equation labels **outside** math mode. The standard pattern is to close the `flalign*` derivation block and then open a plain `center` environment for the boxed result and its Khmer label:
+
+```latex
+\begin{flalign*}
+  E &= -N \frac{\Delta\Phi_B}{\Delta t} &\\
+  &= -N \frac{\Delta(BA\cos\alpha)}{\Delta t} &
+\end{flalign*}
+\begin{center}
+  $\boxed{E = -N \frac{\Delta\Phi_B}{\Delta t}}$ \quad (\khmernumraw{2})
+\end{center}
+```
+
+The `\khmernumraw{2}` call sits in plain paragraph mode where HarfBuzz can shape it correctly. Do not "helpfully" move the label back inside `$...$`.
+
+</Accordion>
+
+<Accordion title="Runaway argument error on second build after a crash">
+
+**Cause:** An interrupted build — Ctrl-C, editor crash, power cut — leaves a partially written `main.out` or `main.toc`. On the next run, LaTeX reads the truncated file and hyperref trips over the broken bookmark data, reporting:
+
+```
+Runaway argument?
+! File ended while scanning use of \Hy@setfield.
+```
+
+This has happened at least three times in the project's history.
+
+**Fix:**
+
+```bash
+latexmk -C main.tex   # wipes main.out, main.toc, main.aux, and friends
+latexmk main.tex      # clean rebuild
+```
+
+Running `latexmk -C` is always safe — it only removes generated files that are reproducible from source.
+
+</Accordion>
+
+<Accordion title="Images are 130-byte text files">
+
+**Cause:** All photos and figures in `img/` are tracked by **Git LFS** (Large File Storage). If you cloned the repository without Git LFS installed, or downloaded the source ZIP from GitHub's "Code → Download ZIP" button, you received LFS pointer files instead of real images. Pointer files look like:
+
+```
+version https://git-lfs.github.com/spec/v1
+oid sha256:0a8f…
+size 245890
+```
+
+XeLaTeX cannot render a JPEG that contains only ASCII text, so every `\khmerphoto` call silently produces a blank frame.
+
+**Fix:**
+
+```bash
+git lfs install        # register LFS with your git installation (once per machine)
+git lfs pull           # fetch and materialise every LFS blob
+```
+
+**Verify:** `git lfs ls-files -l` should list every file in `img/` with a real file size (kilobytes or megabytes). Any entry showing ~130 bytes has not been fetched yet.
+
+<Note>
+  The compiled `main.pdf` is **not** LFS-tracked — it is a regular file committed directly to the repo. LFS only affects contributors who build from source.
+</Note>
+
+</Accordion>
+
+<Accordion title="Khmer glyph stacking breaks on ancient school printers">
+
+**Cause:** Certain stacked Khmer glyph combinations only fail on specific government-grade printer firmware. The PDF renders correctly on screen in every viewer tested; the issue is entirely in the printer's PDF interpreter.
+
+**Status:** Cursed. There is no fix. The PDF is correct — the printer is the problem.
+
+</Accordion>
+
+<Accordion title="CRLF line endings silently disarm .githooks">
+
+**Cause:** On Windows with `core.autocrlf=true`, Git converts LF line endings to CRLF when checking out files. A shell script with a CRLF shebang line (`#!/bin/bash\r`) is unrecognisable to bash, which silently refuses to execute it. The result is that the `commit-msg` hook and `pre-push` LFS hook stop enforcing their rules without any error message.
+
+**Fix:** `.gitattributes` already pins shell scripts and hooks to LF:
+
+```
+*.sh            eol=lf
+.githooks/**    eol=lf
+```
+
+**Verify that the fix is in place:**
+
+```bash
+git ls-files --eol .githooks/commit-msg
+```
+
+The output should show `i/lf` (index line ending = LF). If it shows `i/crlf`, the attribute was not applied — re-checkout the file after confirming `.gitattributes` is correct.
+
+</Accordion>
+
+<Accordion title="chapter3.tex shows a whole-file diff in git status">
+
+**Cause:** A CRLF ↔ LF flip on the file as a whole, not a real content edit. This appears when a Windows contributor's editor re-saved the file with CRLF endings, or when a checkout stripped the LF-only attribute temporarily.
+
+**Verify before concluding someone rewrote the chapter:**
+
+```bash
+git diff --ignore-cr-at-eol --numstat
+```
+
+If the diff disappears when CR-at-EOL is ignored, the file is unchanged in substance. You can restore the correct endings by re-checking-out the file:
+
+```bash
+git checkout -- chapters/chapter3.tex
+```
+
+</Accordion>
+
+<Accordion title="Font slot switching Renderer away from HarfBuzz">
+
+**Cause:** Any `\defaultfontfeatures` override that changes the `Renderer` key away from `HarfBuzz` breaks Khmer OpenType shaping globally. Khmer fonts must be loaded with:
+
+```latex
+\setmainfont{...}[Script=Khmer, Renderer=HarfBuzz]
+```
+
+If a well-meaning edit changes `Renderer=HarfBuzz` to `Renderer=Default` — or omits the key entirely — missing-character glitches return for all Khmer text throughout the document, even in sections that were previously clean.
+
+**Symptom:** A flood of `Missing character` warnings in `main.log`, not limited to equation labels.
+
+**Fix:** Restore `Script=Khmer, Renderer=HarfBuzz` on every Khmer font declaration in `preamble.tex`. Do not override font renderer settings per-chapter.
+
+</Accordion>
+
+<Accordion title="sakuranotes.sty not adopted directly">
+
+**Cause / Background:** The project's sakura box aesthetic was inspired by `sakuranotes.sty` but was **not** imported from that file. The visual style was ported by hand into the `\formulabox` macro in `preamble.tex`.
+
+**Do not add `sakuranotes.sty` to the document.** Adding the original `.sty` file would conflict with the already-ported macros and could overwrite the custom colours and corner-radius settings the book relies on.
+
+If you want to extend or restyle the formula boxes, edit `\formulabox` in `preamble.tex` directly.
+
+</Accordion>
+
+</AccordionGroup>

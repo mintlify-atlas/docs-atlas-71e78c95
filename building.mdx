@@ -1,0 +1,123 @@
+---
+title: "Building the Khmer Physics Handbook PDF"
+sidebarTitle: "Building"
+description: "Compile main.pdf from source using build.sh or build.cmd. Covers latexmk auto-reruns, watch mode, cache cleaning, and troubleshooting failed builds."
+---
+
+Once your prerequisites are in place — XeLaTeX installed, fonts registered on the system, and Git LFS images fetched — compiling the handbook is a single command. Both build scripts wrap `latexmk`, which handles multi-pass compilation automatically so you never have to guess how many times to run the engine.
+
+## Full build flow
+
+<Steps>
+  <Step title="Install Git LFS and clone the repository">
+    Make sure Git LFS is installed, then clone with LFS blobs included:
+
+    ```bash
+    git lfs install
+    git lfs clone https://github.com/airiharuki/physics_textbook.git
+    cd physics_textbook
+    ```
+
+    If you already have a clone without images, run `git lfs pull` to fetch them.
+  </Step>
+
+  <Step title="Install the fonts">
+    Copy all files from the `fonts/` directory onto your system font registry. XeLaTeX resolves fonts by name through the system — fonts sitting in the repo folder alone are not enough.
+
+    - **Linux:** copy to `~/.fonts/` or `/usr/share/fonts/`, then run `fc-cache -fv`
+    - **Windows:** select all font files → right-click → **Install**
+    - **macOS:** double-click each font file → **Install Font**
+  </Step>
+
+  <Step title="Run the build script">
+    From the repository root, run the script for your platform:
+
+    <CodeGroup>
+    ```bash Linux / macOS
+    bash build.sh
+    ```
+
+    ```bat Windows
+    build.cmd
+    ```
+    </CodeGroup>
+
+    The script detects `latexmk` and uses it if available. If `latexmk` is not found, it falls back to running `xelatex` twice manually. On any error the script stays open so you can read what went wrong before the terminal closes.
+  </Step>
+
+  <Step title="Open main.pdf">
+    The compiled handbook is written to `main.pdf` in the repository root. Open it with any PDF viewer to review your changes.
+  </Step>
+</Steps>
+
+---
+
+## What latexmk does
+
+`latexmk` inspects `main.log` after each XeLaTeX pass and re-runs the engine as many times as needed until all cross-references, table-of-contents entries, and page numbers have stabilised. You never have to count passes or babysit the terminal — latexmk does that for you.
+
+The `.latexmkrc` file in the repository root pins the engine to XeLaTeX by setting `$pdf_mode = 5`. This means the bare command `latexmk main.tex` is all you need — no `-xelatex` flag required. (Forgetting that flag was the bug fixed in alpha.11; `.latexmkrc` exists specifically so it cannot happen again.)
+
+```perl
+# .latexmkrc — excerpted
+$pdf_mode = 5;              # 5 = xelatex
+$xelatex = 'xelatex -interaction=nonstopmode -file-line-error -synctex=1 %O %S';
+
+# clean up the extra junk files xelatex leaves behind
+$clean_ext = 'synctex.gz fdb_latexmk fls xdv';
+```
+
+---
+
+## Manual fallback (old-school)
+
+If you cannot use latexmk for any reason, you can drive XeLaTeX directly. You must run it **twice** — the first pass builds the content and writes cross-reference data; the second pass reads that data and resolves page numbers, TOC entries, and hyperref bookmarks. Running it only once will produce a PDF with wrong page numbers and a blank table of contents.
+
+```bash
+xelatex main.tex
+xelatex main.tex
+```
+
+---
+
+## Watch mode
+
+To automatically recompile every time you save a source file, use `latexmk`'s preview-continuous mode:
+
+```bash
+latexmk -pvc main.tex
+```
+
+The terminal stays running and triggers a fresh build on each detected change. Press `Ctrl-C` to stop.
+
+---
+
+## Cleaning the build cache
+
+If a build was interrupted mid-run (power loss, `Ctrl-C` at the wrong moment, a crash), it can leave behind a truncated `main.out` or `main.toc`. The next build reads these stale files and dies immediately with a cryptic error deep in the hyperref bookmark code.
+
+<Warning>
+  A stale `main.out` or `main.toc` from a crashed run will poison the next build with a `Runaway argument` error at the hyperref bookmarks stage. The fix is to wipe all generated files with `latexmk -C` before retrying — do not attempt to continue the broken build.
+</Warning>
+
+To clear all auxiliary and generated files:
+
+```bash
+latexmk -C main.tex
+```
+
+Then run the normal build again:
+
+```bash
+bash build.sh    # or build.cmd on Windows
+```
+
+---
+
+## Output file
+
+The compiled book is written to **`main.pdf`** in the repository root. This file is committed to git by design — it is not tracked by Git LFS, just a regular git-managed file. The compiled PDF is the primary deliverable, and including it in pull requests lets reviewers check the final typeset result without needing to build from source themselves.
+
+<Note>
+  `main.pdf` is a normal git file, not a Git LFS object. Committing it after a build is intentional and expected — include your rebuilt PDF in every pull request.
+</Note>

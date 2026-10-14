@@ -1,0 +1,89 @@
+---
+title: "Chapter 3, Lesson 4: Alternating Current — Introduction"
+sidebarTitle: "AC Circuits"
+description: "The opening of the alternating current lesson: DC vs AC history, sinusoidal waveform advantages, transformer basics, and what comes next in the chapter."
+---
+
+Lesson 4 opens the final major topic of Chapter 3: **alternating current** (ចរន្តឆ្លាស់). As of the latest release (`v1.0.0-alpha.15`), the lesson heading, floral divider, and historical introduction paragraph have been added to the source. The full mathematical treatment — AC circuit parameters, effective values, impedance, and RLC resonance — is planned for the next development phase.
+
+<Note>
+**Content in progress.** As of `v1.0.0-alpha.15`, only the introductory paragraph of Lesson 4 is in the source (`chapter3.tex`). The content below documents what has been written plus the roadmap for what is coming. The photo `img/alternator.png` has been staged via Git LFS.
+</Note>
+
+---
+
+## 1. Historical Context: The War of Currents (1880s)
+
+The opening of Lesson 4 sets the scene with one of the most consequential engineering debates in history. In the **1880s**, two competing visions for electrical power distribution clashed:
+
+| Camp | Figure | Technology |
+|------|--------|-----------|
+| **DC (Direct Current)** | Thomas Edison | Constant-direction current; each neighbourhood needed its own generator |
+| **AC (Alternating Current)** | George Westinghouse | Sinusoidal current; voltage can be stepped up or down with a transformer |
+
+Edison championed direct current and had already built the world's first commercial power station (Pearl Street, New York, 1882). Westinghouse, backed by Nikola Tesla's polyphase AC system, argued that alternating current could be transmitted over far longer distances at far lower cost.
+
+The debate was fierce — Edison staged public demonstrations of AC dangers — but the engineering and economic arguments overwhelmingly favoured AC. By the mid-1890s, the **Niagara Falls hydroelectric project** (using Westinghouse/Tesla AC) settled the matter. AC became the global standard for power distribution, a position it still holds today.
+
+---
+
+## 2. Why AC Won: Sinusoidal Waveform and Transformers
+
+The decisive advantage of alternating current lies in two related facts:
+
+1. **Sinusoidal waveform** — the voltage and current in an AC system vary smoothly as a sine function in time. This smooth periodicity makes AC compatible with rotating machinery (generators and motors produce sinusoidal output naturally) and with the mathematics of inductance and capacitance.
+
+2. **Transformers (ត្រង់ស្វូ)** — a transformer can efficiently step AC voltage up or down using electromagnetic induction. There is no practical equivalent for DC.
+
+### Why transformers matter for power transmission
+
+Power lost as heat in a transmission line is $P_{loss} = I^2 R_{line}$. To minimise loss over long distances, we want **low current** — which means **high voltage** (since $P = IV$ is fixed by the power plant's output). A step-up transformer raises voltage (and lowers current) for transmission; a step-down transformer at the far end reduces voltage to safe levels for homes and factories.
+
+$$\frac{V_s}{V_p} = \frac{N_s}{N_p}$$
+
+where $V_p$ and $V_s$ are primary and secondary voltages, and $N_p$, $N_s$ are the respective numbers of turns.
+
+<Tip>
+A step-up transformer has $N_s > N_p$ (more secondary turns than primary turns). A step-down transformer has $N_s < N_p$. The product $VI$ is conserved (in an ideal transformer), so higher voltage always means proportionally lower current.
+</Tip>
+
+### DC cannot be transformed
+
+A DC voltage is constant in time — it produces a constant magnetic flux in the transformer core, and a **constant** flux induces **zero** EMF (Faraday's law: $\mathcal{E} = -N\,d\Phi/dt$, and $d\Phi/dt = 0$ for DC). Transformers simply do not work with direct current, which is why Edison's DC distribution network required generating stations every mile or so in a city.
+
+---
+
+## 3. What Comes Next in Lesson 4
+
+The roadmap for the remainder of Lesson 4 (noted in the CHANGELOG `[Unreleased]` section and the README) includes:
+
+<Accordion title="Planned AC circuit topics">
+
+| Topic | Key concepts |
+|-------|-------------|
+| **AC circuit parameters** | Frequency $f$, period $T$, angular frequency $\omega = 2\pi f$ |
+| **Sinusoidal waveform** | $v(t) = V_m\sin(\omega t)$, $i(t) = I_m\sin(\omega t + \varphi)$ |
+| **Effective (RMS) values** | $V_{rms} = V_m/\sqrt{2}$, $I_{rms} = I_m/\sqrt{2}$ |
+| **Impedance** | $Z = \sqrt{R^2 + (X_L - X_C)^2}$ for RLC series |
+| **Inductive reactance** | $X_L = \omega L$ |
+| **Capacitive reactance** | $X_C = 1/(\omega C)$ |
+| **Power factor** | $\cos\varphi = R/Z$ |
+| **Resonance** | $\omega_0 = 1/\sqrt{LC}$; $Z_{min} = R$ at resonance |
+| **RLC series circuits** | Phasor diagrams, phase relationships |
+| **Lesson 5** | After Lesson 4: further AC applications (TBC) |
+
+</Accordion>
+
+---
+
+## 4. Connection to Previous Lessons
+
+Lesson 4 draws directly on the groundwork laid in Lessons 2 and 3:
+
+- The **generator equation** $e(t) = NBA\omega\sin(\omega t)$ from Lesson 2 is the origin of the sinusoidal AC waveform — a generator spinning at constant $\omega$ naturally produces AC.
+- The **self-inductance** $L$ and the **LC oscillation** period $T = 2\pi\sqrt{LC}$ from Lesson 3 are the building blocks of AC circuit reactance and resonance.
+- The **transformer** introduced here rests entirely on **Faraday's law** (Lesson 2): mutual induction between a primary and secondary coil is what makes voltage transformation possible.
+
+<Note>
+The handbook's equation numbering continues from Lesson 3's equation (२९). New AC circuit equations will be numbered sequentially from (३०) onward when the lesson content is finalised.
+</Note>

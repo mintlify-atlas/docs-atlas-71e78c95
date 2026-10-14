@@ -1,0 +1,125 @@
+---
+title: "Prerequisites for Building the Khmer Physics Handbook"
+sidebarTitle: "Prerequisites"
+description: "Everything you need before building the handbook: XeLaTeX engine, TeX Live 2023+, Khmer and Latin fonts, and Git LFS for image assets."
+---
+
+Before you can compile the handbook into a PDF, you need a small set of tools installed on your machine. None of them are exotic — but each one is genuinely required, and skipping any step (especially the font installation or Git LFS setup) will produce a broken or incomplete build. Read through the whole page before you clone.
+
+## Requirements at a glance
+
+| Requirement | Details |
+|---|---|
+| Engine | XeLaTeX |
+| TeX distribution | TeX Live 2023+ |
+| Build tool | latexmk |
+| Fonts | Install from `fonts/` onto your system |
+| Image assets | Git LFS |
+
+---
+
+## XeLaTeX engine
+
+The handbook **requires XeLaTeX** — this is non-negotiable. `pdfLaTeX` cannot handle Khmer OpenType shaping. The project loads `fontspec` with `Script=Khmer, Renderer=HarfBuzz` to correctly stack and render Khmer glyphs; `pdfLaTeX` has no OpenType pipeline and will fail immediately. Every build script, every CI check, and every instruction in this handbook assumes XeLaTeX. Do not attempt to substitute another engine.
+
+## TeX Live 2023 or later
+
+Install **TeX Live 2023+**. The handbook has been tested on TeX Live 2026, including on Windows. Older distributions may lack packages or have bugs in XeLaTeX that have since been fixed.
+
+`latexmk` is the build tool used by both `build.sh` and `build.cmd`. It ships bundled with standard TeX Live installations, so you most likely already have it once TeX Live is installed.
+
+<Note>
+  If you are on a minimal TeX Live installation (e.g. `texlive-base` on Debian/Ubuntu), you may need to install `latexmk` separately via your package manager: `sudo apt install latexmk`.
+</Note>
+
+---
+
+## Git LFS — fetch the images first
+
+All photos and figures live in `img/`, which is tracked by **Git LFS** (Large File Storage). This keeps the repository cloneable without forcing everyone to download a large binary blob up front. The trade-off is that you must have Git LFS installed and initialized before cloning, or your `img/` files will be useless ~130-byte pointer text files instead of real images.
+
+<Warning>
+  Using plain `git clone` without Git LFS installed first produces 130-byte pointer text files in `img/` — files that look like image filenames but contain only a hash reference such as `version https://git-lfs.github.com/spec/v1\noid sha256:0a8f…`. XeLaTeX will fail to include them and the book will not build correctly.
+</Warning>
+
+### Installing Git LFS
+
+Choose the method for your platform:
+
+<CodeGroup>
+```bash Linux (apt)
+sudo apt install git-lfs
+```
+
+```bash macOS (Homebrew)
+brew install git-lfs
+```
+
+```powershell Windows (Chocolatey)
+choco install git-lfs
+```
+</CodeGroup>
+
+You can also download an installer directly from [git-lfs.com](https://git-lfs.com).
+
+### Cloning with LFS
+
+After installing Git LFS, initialize it once for your user account and then clone using `git lfs clone`:
+
+```bash
+# 1. Initialize Git LFS (once per machine)
+git lfs install
+
+# 2. Clone with all LFS blobs included
+git lfs clone https://github.com/airiharuki/physics_textbook.git
+cd physics_textbook
+```
+
+### Already cloned without LFS?
+
+No need to re-clone. Just run:
+
+```bash
+git lfs install    # initialize if not already done
+git lfs pull       # fetch and place every LFS file into img/
+```
+
+To verify your images are real files and not pointers, run:
+
+```bash
+git lfs ls-files -l
+```
+
+Each entry in `img/` should show a real file size. If `img/deflexion.jpg` shows roughly 130 bytes, run `git lfs pull` again.
+
+---
+
+## Fonts
+
+The `fonts/` directory in the repository contains the Khmer and Latin typefaces the handbook uses (`fontspec` loads them by name: Romnea for page numbers, Ang TaPich for headers, Moul for chapter titles, and Nunito as the Latin fallback). XeLaTeX resolves fonts through the **system font registry** — it does not automatically find fonts that are merely present somewhere in the repo directory. You must install them onto your system before building.
+
+### Linux
+
+Copy the font files to either your user font directory or the system font directory, then refresh the font cache:
+
+```bash
+# Option 1: current user only
+cp fonts/* ~/.fonts/
+fc-cache -fv
+
+# Option 2: system-wide (requires root)
+sudo cp fonts/* /usr/share/fonts/
+fc-cache -fv
+```
+
+### Windows
+
+Open the `fonts/` folder in File Explorer, select all font files, right-click, and choose **Install** (or **Install for all users** if you have administrator rights). The fonts will appear in the system registry immediately.
+
+### macOS
+
+Open the `fonts/` folder in Finder, double-click each font file, and click **Install Font** in the Font Book preview that opens. Alternatively, drag all font files into the Font Book application.
+
+<Tip>
+  On Linux, after running `fc-cache -fv` you can confirm a font is registered with `fc-list | grep -i "Moul"` (replace with the font name you want to check). If nothing is returned, the file was not copied to the right location.
+</Tip>

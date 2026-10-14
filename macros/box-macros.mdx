@@ -1,0 +1,154 @@
+---
+title: "Box Macros: Formula Boxes, Definition Boxes, Video Boxes"
+sidebarTitle: "Box Macros"
+description: "The tcolorbox-based content boxes in preamble.tex: \\formulabox, \\quickformula, \\defbox, and \\khmervideobox — parameters, options, and LaTeX examples."
+---
+
+The handbook uses four distinct box macros for presenting structured content. All are defined in `preamble.tex` using the `tcolorbox` package (loaded with `[most]`). The shared visual language is a washed-pink background (`boxbg`, RGB 255 245 250) and a `primary` color accent (RGB 186 85 211), which ties every box to the sakura theme without being loud.
+
+---
+
+## `formulabox` environment
+
+The primary box for presenting a cluster of related formulas. Built with `\newtcolorbox`, so it is used as an environment, not a command.
+
+**Signature:** `\begin{formulabox}[opts]{title} ... \end{formulabox}`
+
+<ParamField path="opts" type="tcolorbox key-value list" default="(empty)">
+  Optional tcolorbox overrides. The house style passes nothing here for full-width use. The most common override in the source is `breakable=false` (the default is `breakable` — see below).
+</ParamField>
+
+<ParamField path="title" type="string">
+  The box title, rendered in `\khmerheader\large\bfseries` in the `primary` color, with a 0.5pt `primary!45` hairline rule below it.
+</ParamField>
+
+### Key tcolorbox parameters (set by the macro definition)
+
+| Parameter | Value | Effect |
+|---|---|---|
+| `enhanced, breakable` | always on | Box can break across pages by default |
+| `colback` | `boxbg` | Washed-pink fill |
+| `frame hidden, boxrule=0pt` | — | No outer border frame |
+| `sharp corners` | — | Right-angle corners |
+| `borderline west` | `3pt`, offset `0pt`, color `primary` | 3pt purple left accent bar |
+| `left/right/top/bottom` | `14pt/12pt/9pt/10pt` | Internal padding |
+| `coltitle` | `primary` | Purple title text |
+| `fonttitle` | `\bfseries` | Bold title |
+| `attach title to upper` | — | Title sits inside the content box, not in a separate title bar |
+| `after title` | `\par\vskip3pt` + hairline `\hrule` + `\vskip7pt` | Hairline separator between title and body |
+
+<Warning>
+  `formulabox` has `breakable` enabled by default. When you **do** want to prevent a page break inside the box (the house style for single full-width formula panels), pass `breakable=false` as the optional argument. More critically: **never place a `formulabox` inside a `minipage`** — the `breakable` mode conflicts with frozen minipage dimensions and causes box overflow or incorrect stacking. Formula boxes must sit on their own full-width line.
+</Warning>
+
+```latex
+\begin{formulabox}[breakable=false]{ច្បាប់ Faraday}
+    ច្បាប់ Faraday បញ្ជាក់ថា EMF ដែលកើតឡើងក្នុងសៀគ្វីមួយស្មើ
+    នឹងអត្រាការផ្លាស់ប្ដូរអវ្យវៈ flux ម៉ាញេទិក:
+
+    \begin{flalign*}
+        \mathcal{E} &= -\frac{d\Phi_B}{dt} &
+    \end{flalign*}
+    \begin{center}
+        $\boxed{\mathcal{E} = -\frac{d\Phi_B}{dt}}$ \quad (\khmernumraw{12})
+    \end{center}
+
+    ដែល $\Phi_B = B \cdot A \cdot \cos\theta$ គឺជា flux ម៉ាញេទិក
+    ហើយ $\mathcal{E}$ គឺ EMF ឬ electromotive force។
+\end{formulabox}
+```
+
+---
+
+## `\quickformula{content}`
+
+A lightweight single-equation box — no title, no left accent bar. Uses a plain `\colorbox{boxbg}` wrapping a `minipage` at `0.75\linewidth`, content centered with `\centering`, `\large\color{brownheader}` text.
+
+**Signature:** `\quickformula{content}`
+
+<ParamField path="content" type="LaTeX math or text">
+  The equation or short formula to display. Displayed at `\large` in `brownheader`. Math must be wrapped in `$...$` or `\[...\]` as usual.
+</ParamField>
+
+This is distinct from `formulabox` in three ways: no title bar, no left accent bar, and narrower (75% of line width vs. full width). Use it for a single prominent equation that does not need a labeled heading.
+
+```latex
+\quickformula{$F = BIL\sin\theta$}
+```
+
+```latex
+\quickformula{$\tau = NBIA\sin\theta$}
+```
+
+---
+
+## `\defbox{content}`
+
+A plain definition or key-statement panel. Implemented as a `tcolorbox` centered at `0.75\linewidth` with:
+- `colback=boxbg` (washed-pink fill)
+- `colframe=bacpink!70` with `boxrule=0.8pt` (light pink outer border)
+- `borderline west={3pt}{0pt}{bacpink}` (3pt pink left accent bar — distinct from the `primary`/purple bar used by `formulabox`)
+- `sharp corners`
+- `fontupper=\small`
+
+**Signature:** `\defbox{content}`
+
+<ParamField path="content" type="LaTeX content">
+  The definition body. Rendered at `\small` in the default body font. Can contain inline math, `\textbf{}`, or any other inline markup.
+</ParamField>
+
+```latex
+\defbox{
+    \textbf{ម៉ាញេទិក} (Magnetism) គឺជាបាតុភូតដែលវត្ថុមួយចំនួន
+    អាចទាក់ទាញ ឬច្រានដៃរបស់ $Fe$, $Co$, $Ni$
+    ហើយក៏ទាក់ទាញ ឬច្រានដៃបំណែក ម៉ាញេទិកផ្សេងទៀតផង។
+}
+```
+
+---
+
+## `\khmervideobox{video-id-or-url}{title}{caption}`
+
+A clickable YouTube link box with an auto-generated QR code, styled to match `formulabox` exactly — same `colback`, `borderline west`, `sharp corners`, padding, and title rendering.
+
+**Signature:** `\khmervideobox{video-id-or-url}{title}{caption}`
+
+<ParamField path="video-id-or-url" type="string">
+  Either a bare YouTube video ID (e.g. `dQw4w9WgXcQ`) or a full `https://` URL. If the argument does not start with `http`, the macro prepends `https://youtu.be/` automatically. The resulting URL is used for both the hyperlink and the QR code.
+</ParamField>
+
+<ParamField path="title" type="string">
+  The box title, rendered identically to `formulabox` — `\khmerheader\large\bfseries` in `primary`, with the same hairline rule below.
+</ParamField>
+
+<ParamField path="caption" type="string">
+  Caption text placed below the YouTube hyperlink in the left column. Keep to 3–4 lines so the QR code on the right stays roughly square with the text block.
+</ParamField>
+
+### Internal layout
+
+The box body is split into two minipages:
+- **Left (68% of line width):** a `\href` hyperlink with `\faChevronRight\ Watch on YouTube` in `\textbf{\englishfont}` colored `primary`, followed by `\smallskip` and the caption text.
+- **Right (26% of line width):** the QR code at `height=2.6cm`, generated by the `qrcode` package from the resolved URL.
+
+The box is `breakable` (unlike `formulabox`'s house style of `breakable=false`).
+
+```latex
+\khmervideobox{dQw4w9WgXcQ}
+    {វីដេអូពន្យល់: ច្បាប់ Faraday}
+    {វីដេអូនេះពន្យល់ពីការបង្ហាញ EMF ដែលកើតឡើង
+     ក្នុងចន្លោះ flux ម៉ាញេទិកផ្លាស់ប្ដូរ។
+     ស្កេន QR code ដើម្បីមើលភ្លាមៗ។}
+```
+
+```latex
+% Full URL form
+\khmervideobox{https://youtu.be/dQw4w9WgXcQ}
+    {អាំងឌុចស្យុងអេឡិចត្រូម៉ាញេទិក}
+    {ការពន្យល់ Lenz's law និង Faraday's law
+     ជាមួយឧទាហរណ៍ជាក់ស្ដែង។}
+```
+
+<Note>
+  The `qrcode` package and `fontawesome` (used for `\faChevronRight`) are both loaded globally in `preamble.tex`. Do not add `\usepackage{qrcode}` or `\usepackage{fontawesome5}` in a chapter file — they are already present, and duplicate loading will cause errors.
+</Note>

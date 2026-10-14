@@ -1,0 +1,187 @@
+---
+title: "Chapter 3, Lesson 1: Magnetism and Magnetic Forces"
+sidebarTitle: "Magnetism"
+description: "Magnetic fields from wires, loops, and solenoids; Lorentz force; charged particle trajectories; force on current-carrying wires; mass spectrograph derivation."
+---
+
+Lesson 1 of Chapter 3 opens the handbook's treatment of **electromagnetism** (អគ្គិសនីនិងម៉ាញេទិច) with a full account of **magnetism and magnetic forces** (ដែននិងកម្លាំងម៉ាញេទិក). Beginning with natural and artificial magnets, the lesson derives the magnetic field produced by current-carrying conductors of different geometries, establishes the Lorentz force law, traces the circular path of a charged particle in a magnetic field, and finishes with two precision measurement applications: magnetic deflection and the mass spectrograph. Equations (១) through (១២) are defined in this lesson.
+
+---
+
+## 1. Natural and Artificial Magnets (មេដែក)
+
+A **magnet** (មេដែក) is any object that can attract iron. Every magnet has two inseparable poles: a **north pole (N)** and a **south pole (S)**. The interaction rule is:
+
+- Like poles (**N–N** or **S–S**) repel each other.
+- Unlike poles (**N–S**) attract each other.
+
+**Natural magnets** exist in nature — the primary example is magnetite (lodestone), Fe₃O₄. **Artificial magnets** are manufactured to specific shapes: bar magnets, needle magnets, and U-shaped magnets.
+
+**TikZ figure in source:** Detailed diagrams of two magnets in repulsion (N–N) and attraction (N–S), drawn with red (N) and blue (S) half-bars and field-line arcs.
+
+---
+
+## 2. Earth's Magnetic Field (ដែនម៉ាញេទិចផែនដី)
+
+Earth behaves as a giant magnet. Two important angle concepts:
+
+| Quantity | Khmer term | Definition |
+|----------|-----------|-----------|
+| **Magnetic declination** | ឌិចក្លីណេស្យុងម៉ាញេទិក | Angle between magnetic north and geographic north |
+| **Magnetic inclination** | អាំងក្លីណេស្យុងម៉ាញេទិក | Angle between field line direction and the horizontal plane |
+
+<Note>
+Earth's geographic north pole is actually near a magnetic south pole — that is why the north-seeking end of a compass needle points toward it. Declination varies by location and changes slowly over time.
+</Note>
+
+---
+
+## 3. Magnetic Field from Current-Carrying Conductors
+
+### 3.1 Straight Wire — Equation (១)
+
+A long straight wire carrying current $I$, at perpendicular distance $r$ from the wire, produces magnetic field:
+
+$$\boxed{B = \frac{\mu_0 I}{2\pi r}} \tag{១}$$
+
+**Right-hand grip rule:** Wrap the right hand around the wire with the thumb pointing in the direction of current $I$; the curling fingers show the direction of the circular field lines.
+
+**Constants:** $\mu_0 = 4\pi \times 10^{-7}\ \text{T·m/A}$ (permeability of free space).
+
+### 3.2 Circular Current Loop — Equation (២)
+
+At the centre of a single circular loop of radius $R$ carrying current $I$:
+
+$$B = \frac{\mu_0 I}{2R} \tag{២}$$
+
+### 3.3 Solenoid — Equation (៣)
+
+A solenoid with $n$ turns per unit length carrying current $I$ produces a uniform interior field:
+
+$$\boxed{B = \mu_0 n I} \tag{៣}$$
+
+where $n = N/l$ (total turns $N$ divided by length $l$).
+
+<Tip>
+For a solenoid, the field inside is nearly perfectly uniform and the field outside is nearly zero — making it the ideal electromagnet geometry for laboratory applications.
+</Tip>
+
+---
+
+## 4. Lorentz Force on a Moving Charge
+
+### 4.1 Magnetic Force — Equation (៤)
+
+A charge $q$ moving at speed $v$ perpendicular to a magnetic field $B$ experiences:
+
+$$\boxed{F_B = |q|vB} \tag{៤}$$
+
+The force direction is given by the **right-hand rule** for cross products: $\vec{F}_B = q\vec{v} \times \vec{B}$.
+
+### 4.2 Circular Trajectory Radius — Equation (៥)
+
+Because $F_B$ is always perpendicular to $v$, it acts as centripetal force. Setting $F_B = mv^2/R$:
+
+$$|q|vB = \frac{mv^2}{R}
+\quad\Rightarrow\quad
+\boxed{R = \frac{mv}{|q|B}} \tag{៥}$$
+
+**TikZ figure in source:** Diagram of a positive charge entering a magnetic field region and curving into a circular arc, with radius $R$, velocity $v$, and force $F_B$ labelled.
+
+### 4.3 Helix Trajectory
+
+If the velocity has a component parallel to $\vec{B}$, the particle follows a **helix**: circular motion in the plane perpendicular to $\vec{B}$, combined with uniform motion along $\vec{B}$.
+
+---
+
+## 5. Force on a Current-Carrying Wire
+
+### 5.1 Force on a Straight Wire — Equation (៦)
+
+A wire of length $L$ carrying current $I$ in a uniform field $B$ (field perpendicular to wire) experiences:
+
+$$\boxed{F_B = BIL} \tag{៦}$$
+
+### 5.2 Force Between Two Parallel Wires — Equation (៧)
+
+Two parallel wires separated by distance $d$, carrying currents $I_a$ and $I_b$ over length $L$, exert a mutual force:
+
+$$\boxed{F = \frac{\mu_0 I_a I_b L}{2\pi d}} \tag{៧}$$
+
+- Currents in the **same direction** → wires **attract**.
+- Currents in **opposite directions** → wires **repel**.
+
+**TikZ figures in source:** Side-by-side diagrams showing the two cases (attraction and repulsion) with field lines from each wire and force arrows on each conductor.
+
+---
+
+## 6. Rotating-Frame Motor Application
+
+A rectangular current loop in a uniform field experiences a **torque** that tends to align the loop with the field. This is the operating principle of a DC motor. When the loop plane is parallel to $\vec{B}$, the torque is maximum; when perpendicular, it is zero (stable equilibrium). A **commutator** reverses the current direction every half-turn to maintain continuous rotation.
+
+---
+
+## 7. Magnetic Deflection of Charged Particles
+
+### 7.1 Deflection Angle — Equation (৮)
+
+A charged particle of mass $m$, charge $q$, initial speed $v$ entering a magnetic field region of length $l$ is deflected by a small angle:
+
+$$\boxed{\alpha = \frac{|q|Bl}{mv}} \tag{৮}$$
+
+**TikZ figures in source:** Diagrams of the deflection geometry showing the particle entering horizontally, curving through angle $\alpha$, and exiting the field region.
+
+---
+
+## 8. Mass Spectrograph — Equations (৯)–(১২)
+
+The mass spectrograph separates ions by mass-to-charge ratio. An ion accelerated through potential difference $V$ gains kinetic energy:
+
+$$\frac{1}{2}mv^2 = qV \tag{৯}$$
+
+$$v = \sqrt{\frac{2qV}{m}} \tag{১০}$$
+
+The ion then enters a magnetic field $B$ and follows a circular arc of radius $R$:
+
+$$R = \frac{mv}{qB} \tag{১১}$$
+
+Eliminating $v$ between equations (১০) and (১১) gives the **mass spectrograph formula**:
+
+$$\boxed{m = \frac{q(RB)^2}{2V}} \tag{১২}$$
+
+<Accordion title="Derivation detail">
+
+From $R = mv/qB$ we get $v = qBR/m$. Substituting into the energy equation $\frac{1}{2}mv^2 = qV$:
+
+$$\frac{1}{2}m\left(\frac{qBR}{m}\right)^2 = qV
+\quad\Rightarrow\quad
+\frac{q^2B^2R^2}{2m} = qV
+\quad\Rightarrow\quad
+m = \frac{q(RB)^2}{2V}$$
+
+By measuring the radius $R$ of the ion arc (from the impact position on a photographic plate), the mass $m$ can be determined precisely.
+
+</Accordion>
+
+---
+
+## 9. Equation Summary — Lesson 1
+
+| Eq. # | Formula | Quantity |
+|-------|---------|---------|
+| (១) | $B = \mu_0 I / 2\pi r$ | Field from straight wire |
+| (២) | $B = \mu_0 I / 2R$ | Field at centre of circular loop |
+| (៣) | $B = \mu_0 n I$ | Field inside solenoid |
+| (៤) | $F_B = \|q\|vB$ | Lorentz force on moving charge |
+| (៥) | $R = mv / \|q\|B$ | Radius of circular orbit |
+| (៦) | $F_B = BIL$ | Force on current-carrying wire |
+| (៧) | $F = \mu_0 I_a I_b L / 2\pi d$ | Force between two parallel wires |
+| (৮) | $\alpha = \|q\|Bl / mv$ | Magnetic deflection angle |
+| (৯) | $\frac{1}{2}mv^2 = qV$ | Ion energy after acceleration |
+| (১০) | $v = \sqrt{2qV/m}$ | Ion entry speed |
+| (১১) | $R = mv / qB$ | Arc radius in spectrograph |
+| (১২) | $m = q(RB)^2 / 2V$ | Mass spectrograph formula |
+
+<Warning>
+The permeability constant $\mu_0 = 4\pi \times 10^{-7}\ \text{T·m/A}$ appears in every magnetic field formula in this lesson. Always carry the full value; approximating it as $1.26 \times 10^{-6}$ is acceptable for numerical problems but make sure units are consistent throughout.
+</Warning>

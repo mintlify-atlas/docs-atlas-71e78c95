@@ -1,0 +1,116 @@
+---
+title: "Equation Numbering and Figure Captioning in the Handbook"
+sidebarTitle: "Equations & Numbering"
+description: "How to number equations and figure captions continuously through the book using Khmer numerals, the flalign* pattern for multi-step derivations, and the boxed result style."
+---
+
+The Handbook uses a single, unbroken numbering sequence for every equation and every figure across all chapters. There are no per-lesson or per-chapter counters. This page explains the conventions, the `flalign*` derivation pattern that keeps Khmer numerals out of math mode, the boxed-result style, and the most common pitfalls when working with OCR-sourced content.
+
+## Continuous book-wide numbering
+
+Equation labels and figure captions count upward from the very first item in chapter 1 and never reset. The current state of the book at `v1.0.0-alpha.14` is:
+
+| Sequence | Range |
+|---|---|
+| Equations | **(១)** through **(២៩)** |
+| Figures | **រូបទី១** through **រូបទី៤១** |
+
+**Do not restart at (១) or រូបទី១ when you start a new lesson or a new chapter.** Pick up immediately after the last number already in the book.
+
+<Warning>
+  OCR-pasted lesson text almost always carries its own local numbering that starts at (1) or (ក). These numbers **always collide** with the book-wide sequence. Renumber every equation label and every figure caption in the pasted text before inserting it into the source, then find and replace every in-prose cross-reference (e.g. "ដូចក្នុងរូបទី3" or "ពីសមីការ (2)") that now points to a stale number.
+</Warning>
+
+## Equation number placement — the house pattern
+
+Khmer digit characters such as `២` cannot live inside a `$...$` math environment. XeLaTeX falls back to the `cmr12` Latin font inside math mode and produces a **"Missing character: There is no ២ in font cmr12!"** warning for every Khmer glyph it encounters there. The label is silently dropped from the PDF. See [Known Issues](/authoring/known-issues) for the full explanation.
+
+The house pattern solves this by placing the Khmer numeral **outside** the math environment entirely. For multi-step derivations, use `flalign*` for the algebra and a plain `center` block below it for the boxed result and its label:
+
+```latex
+\begin{flalign*}
+  E &= -N \frac{\Delta\Phi_B}{\Delta t} &\\
+  &= -N \frac{\Delta(BA\cos\alpha)}{\Delta t} &
+\end{flalign*}
+\begin{center}
+  $\boxed{E = -N \frac{\Delta\Phi_B}{\Delta t}}$ \quad (\khmernumraw{2})
+\end{center}
+```
+
+Key points about this pattern:
+
+- `flalign*` aligns the `&` column against the left margin and suppresses automatic numbering — the `*` variant is always used here.
+- The trailing `&` on each line of the `flalign*` block flushes the equation to the left, matching the book's house style.
+- `\khmernumraw{2}` converts the Arabic integer `2` to the Khmer numeral `២` — always use `\khmernumraw` rather than typing the Unicode character directly, so the number is generated consistently.
+- The `\quad` before the label gives visual separation between the box and the parenthesized number.
+- The entire label lives in plain paragraph mode, outside any math delimiters, so HarfBuzz can shape the Khmer glyph correctly.
+
+<Note>
+  For single-line results that need no derivation steps, you can skip `flalign*` entirely and open with the `center` block directly. The rule is simple: the `(\khmernumraw{N})` label must never be inside `$...$`.
+</Note>
+
+## Boxed results
+
+Every key result is wrapped in `$\boxed{...}$` to signal to readers that it is a formula they should remember. The box is placed in the `center` environment immediately after the derivation:
+
+```latex
+\begin{center}
+  $\boxed{F = qvB\sin\theta}$ \quad (\khmernumraw{5})
+\end{center}
+```
+
+For results that deserve extra visual weight, use `\quickformula` — a rounded box defined in `preamble.tex` — for a self-contained one-liner:
+
+```latex
+\quickformula{$F = qvB\sin\theta$}
+```
+
+And for a cluster of related formulas with a titled header, use `\formulabox`:
+
+```latex
+\formulabox[breakable=false]{កម្លាំងឡូរ៉ង់ស៍}{
+  $F = qvB\sin\theta$ \\[4pt]
+  $F_{\max} = qvB$ \quad \text{(នៅពេល } $\theta = 90°$\text{)}
+}
+```
+
+Always set `breakable=false` on `\formulabox` and never nest it inside a frozen minipage. A frozen minipage prevents the box from splitting, causing it to overflow the page and stack rows on top of each other.
+
+## Figure captions
+
+Every figure caption is prefixed with the Khmer label **រូបទីNN៖** (figure number followed by a Khmer colon). Always go through `\khmerphoto` — never use bare `\includegraphics`:
+
+```latex
+\khmerphoto[0.6\linewidth]{img/generator.jpg}%
+  {{\khmerpagenum\small\color{brownheader} រូបទី២៨៖ ជនិតាអគ្គិសនី}}
+```
+
+- `\khmerpagenum` switches the font to the Romnea Khmer typeface for the caption text.
+- `\small` keeps the caption visually subordinate to body text.
+- `\color{brownheader}` applies the standard caption colour defined in `preamble.tex`.
+- The `[0.6\linewidth]` width argument is the default; override it for side-by-side layouts (typically `[0.95\linewidth]` inside a `0.40\textwidth` minipage).
+
+When the caption is passed as the third argument to `\khmerphoto`, the macro places it automatically below the framed photo. Do not manually typeset captions outside the macro.
+
+## Symbol glossary after boxed results
+
+Immediately after every boxed result, list each symbol that appears in the formula, together with its plain-language meaning and SI unit. The standard pattern is a `\formulabox` or a simple `\begin{itemize}` block:
+
+```latex
+\begin{itemize}[label={\textcolor{brownheader}{\faCaretRight}}]
+  \item $E$ — សេចក្តីខ្លី (EMF) ជាវ៉ុល (V)
+  \item $N$ — ចំនួនរង្វិលនៃខ្សែ (គ្មានឯកតា)
+  \item $\Phi_B$ — លំហូរម៉ាញេទិក ជាវ៉េប័រ (Wb)
+  \item $\Delta t$ — អន្តរករណ៍ម៉ោង ជាវិនាទី (s)
+\end{itemize}
+```
+
+This pattern is used consistently throughout chapter 3 — one bullet per symbol, with its full Khmer name and SI unit on the same line. Reproduce it for every new boxed result.
+
+## Equation cross-reference traps
+
+When OCR text refers to an equation by number in running prose — for example, "ដូចបានបង្ហាញក្នុងសមីការ (3)" — that local number almost certainly does not match the book-wide label you assigned when you inserted the equation. **Find and replace all such cross-references before committing.** There is no automatic cross-reference system; every prose reference is a manually typed number.
+
+<Tip>
+  After renumbering, do a full-text search for digits wrapped in Khmer parentheses (e.g. `(១)`, `(2)`, `(ក)`) in the file you just edited. Any number that is smaller than your chapter's starting equation index is almost certainly a stale local reference from the OCR source.
+</Tip>

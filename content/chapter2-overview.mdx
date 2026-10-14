@@ -1,0 +1,218 @@
+---
+title: "Chapter 2: Waves and Interference — Content Overview"
+sidebarTitle: "Waves"
+description: "Topics and key equations in Chapter 2: particle displacement equations, wave graphing, superposition, constructive and destructive interference, standing waves."
+---
+
+Chapter 2 of the Khmer Physics Handbook covers **waves and interference** (គោលការណ៍តម្រួតនៃរលក និងរលកជញ្ច្រុំ). Starting from Newton's second law applied to a restoring force, the chapter derives the sinusoidal displacement equation, shows how to graph wave functions in both time and space, then builds up to superposition, constructive and destructive interference (including acoustic and optical cases), standing waves, and the double-slit experiment. The chapter also introduces Fresnel vector construction as a practical tool for adding waves with arbitrary phase differences.
+
+---
+
+## 1. Particle Displacement Equation
+
+A wave arises when a medium transmits oscillations from one location to the next. Applying Newton's second law with restoring force $F = -kx$ yields the differential equation:
+
+$$\frac{d^2x}{dt^2} + \omega^2 x = 0$$
+
+The general sinusoidal solution is:
+
+$$\boxed{x = A\sin(\omega t + \varphi) \quad \text{or} \quad x = A\cos(\omega t + \varphi)}$$
+
+where $A$ is the amplitude, $\omega$ the angular frequency, and $\varphi$ the initial phase.
+
+---
+
+## 2. Velocity and Acceleration of an Oscillating Particle
+
+Differentiating the displacement:
+
+**Velocity:**
+$$v = \frac{dx}{dt} = \omega A \cos(\omega t + \varphi)$$
+
+Maximum speed occurs at the equilibrium position:
+$$v_{max} = \omega A$$
+
+**Acceleration:**
+$$a = \frac{dv}{dt} = -\omega^2 A \sin(\omega t + \varphi) = -\omega^2 x$$
+
+Maximum acceleration occurs at the amplitude (turning points):
+$$a_{max} = \omega^2 A$$
+
+<Tip>
+Note the elegant relation $a = -\omega^2 x$. This directly shows that acceleration is always directed back toward the equilibrium position and is proportional to the displacement — the defining hallmark of simple harmonic motion.
+</Tip>
+
+---
+
+## 3. Wave Graphing: Step-by-Step
+
+Wave graphs come in two types depending on which variable is swept:
+
+### 3.1 Time-Based Graph: $x(t) = A\sin(\omega t)$
+
+**Step 1 — Draw axes:** Vertical axis is displacement $x$ (mark $\pm A$); horizontal axis is time $t$ (mark $T/2$ and $T$).
+
+**Step 2 — Trace the sine:** The curve starts at the origin $(0, 0)$, rises to $+A$ at $T/4$, crosses zero at $T/2$, falls to $-A$ at $3T/4$, and returns to zero at $T$.
+
+**TikZ figure in source:** Two-panel TikZ diagram — first panel shows the blank axes with dashed amplitude lines; second panel overlays the red sine curve with black dots at $0$, $T/2$, and $T$.
+
+### 3.2 Position-Based Graph: $y(x) = A\cos(kx)$
+
+**Step 1 — Draw axes:** Horizontal axis is position $x$ (mark $\lambda/4$, $\lambda/2$, $3\lambda/4$, $\lambda$); vertical axis is displacement.
+
+**Step 2 — Trace the cosine:** The curve starts at the peak $(0, A)$, crosses zero at $\lambda/4$, reaches the trough $-A$ at $\lambda/2$, crosses zero again at $3\lambda/4$, and returns to the peak at $\lambda$.
+
+**TikZ figure in source:** Two-panel TikZ diagram — first panel shows axes with dashed amplitude lines and quarter-wavelength ticks; second panel overlays the blue cosine curve with dots at key turning points.
+
+---
+
+## 4. Fresnel Construction (Phasor Addition)
+
+The Fresnel (phasor) method adds two waves of the same frequency but different amplitudes and initial phases using **vector addition**. For waves $x_1$ (amplitude $A_1$, phase $\varphi_1$) and $x_2$ (amplitude $A_2$, phase $\varphi_2$):
+
+**Resultant amplitude** (law of cosines):
+$$A = \sqrt{A_1^2 + A_2^2 + 2A_1A_2\cos(\varphi_2 - \varphi_1)}$$
+
+**Resultant phase:**
+$$\tan\varphi = \frac{A_1\sin\varphi_1 + A_2\sin\varphi_2}{A_1\cos\varphi_1 + A_2\cos\varphi_2}$$
+
+<Accordion title="Worked example from the textbook">
+
+Given:
+$$y_1 = (5\ \text{cm})\sin\!\left(10\pi t + \pi\right), \qquad y_2 = (5\ \text{cm})\sin\!\left(10\pi t + \frac{\pi}{2}\right)$$
+
+**Step 1 — Extract data:** $A_1 = A_2 = 5\ \text{cm}$; $\varphi_1 = \pi$; $\varphi_2 = \pi/2$; $\Delta\varphi = -\pi/2$ (vectors are perpendicular).
+
+**Step 2 — Amplitude:**
+$$A = \sqrt{5^2 + 5^2 + 2(5)(5)\cos(-\pi/2)} = \sqrt{50} = 5\sqrt{2} \approx 7.07\ \text{cm}$$
+
+**Step 3 — Phase:**
+$$\tan\varphi = \frac{5\sin\pi + 5\sin(\pi/2)}{5\cos\pi + 5\cos(\pi/2)} = \frac{0 + 5}{-5 + 0} = -1 \implies \varphi = \frac{3\pi}{4}$$
+
+**Result:**
+$$y = \left(5\sqrt{2}\ \text{cm}\right)\sin\!\left(10\pi t + \frac{3\pi}{4}\right)$$
+
+</Accordion>
+
+---
+
+## 5. Superposition Principle
+
+When two or more waves of the **same frequency** travel through the same medium and cross at a point, the total displacement is the **algebraic sum** of the individual displacements:
+
+$$y = y_1 + y_2$$
+
+<Note>
+After passing through each other the waves continue unchanged — they do not permanently alter each other's shape or direction. This is the principle of superposition.
+</Note>
+
+---
+
+## 6. Standing Waves (រលកជញ្ច្រុំ)
+
+Standing waves form from the superposition of an **incident wave** and its **reflection** — same amplitude, wavelength, and frequency, but travelling in opposite directions.
+
+Given:
+- Incident wave: $y_1 = a\sin(kx - \omega t)$
+- Reflected wave: $y_2 = a\sin(kx + \omega t)$
+
+Applying the trigonometric product formula:
+
+$$\boxed{y(x,t) = [2a\sin(kx)]\cos(\omega t) \equiv A_{SW}\cos(\omega t)}$$
+
+The factor $2a\sin(kx)$ is a **position-dependent amplitude** — there is no net wave propagation.
+
+### Nodes and Antinodes
+
+| Feature | Condition | Position |
+|---------|-----------|----------|
+| **Node** (ថ្នាំង) — zero amplitude | $2a\sin kx = 0$ | $x = n\dfrac{\lambda}{2}$ |
+| **Antinode** (ពោះ) — maximum amplitude | $2a\sin kx = \pm 2a$ | $x = (2n+1)\dfrac{\lambda}{4}$ |
+
+The length of a standing-wave segment satisfies:
+
+$$L = n\frac{\lambda}{2} \qquad (n = 1, 2, 3, \ldots)$$
+
+**TikZ figure in source:** A standing-wave diagram showing the incident wave (red solid), reflected wave (blue dashed), and the labelled nodes **N** and antinodes **A** along the $x$-axis, with a fixed wall at the right end.
+
+---
+
+## 7. Interference (អាំងទែផេរ៉ង់)
+
+Interference occurs when two coherent waves (same frequency, amplitude, and phase relationship) cross in the same medium.
+
+### 7.1 Constructive Interference (អាំងទែផេរ៉ង់សង់)
+
+Occurs when **crest meets crest** or **trough meets trough** — the amplitudes add.
+
+$$\Delta d = n\lambda \qquad (n = 0, 1, 2, \ldots)$$
+
+**TikZ figure in source:** Pulse diagram showing two approaching humps, then their superposed double-height hump at the moment of overlap, then the two separating humps. A circular wavefront diagram marks constructive-interference points (green dots) where the red circles ($S_1$) and blue circles ($S_2$) coincide.
+
+### 7.2 Destructive Interference (អាំងទែផេរ៉ង់បំផ្លាញ)
+
+Occurs when **crest meets trough** — the displacements cancel.
+
+$$\Delta d = (2n+1)\frac{\lambda}{2} \qquad (n = 0, 1, 2, \ldots)$$
+
+**TikZ figure in source:** Corresponding pulse diagram with a flat-line middle frame labelled "អាំងទែផេរ៉ង់បំផ្លាញ", and a circular wavefront diagram with grey destructive-interference dots where crests of one source meet troughs of the other.
+
+---
+
+## 8. Acoustic Interference (អាំងទែផេរ៉ង់សូរ)
+
+For sound from two sources $S_1$ and $S_2$, the path-length difference $\Delta d = d_2 - d_1$ determines the interference type.
+
+**Maximum sound (constructive):**
+$$\boxed{d_2 - d_1 = \Delta d = \frac{nv}{f}} \qquad (n = 0, 1, 2, \ldots)$$
+
+**Minimum sound / silence (destructive):**
+$$\boxed{d_2 - d_1 = \Delta d = (2n+1)\frac{v}{2f}} \qquad (n = 0, 1, 2, \ldots)$$
+
+where $v$ is the speed of sound and $f$ is the frequency.
+
+---
+
+## 9. Double-Slit Light Interference (អាំងទែផេរ៉ង់ពន្លឺ)
+
+Monochromatic light passing through two slits separated by distance $a$ produces alternating bright and dark fringes on a screen at distance $L$.
+
+**TikZ figure in source:** Intensity pattern with labelled bright maxima ($m = -3$ to $+3$, red dots) and dark minima (grey dots), plus a double-slit geometry diagram showing slits $S_1$/$S_2$, point $P$ on the screen, path lengths $d_1$/$d_2$, angle $\theta$, transverse position $x$, and slit separation $a$.
+
+### Angular positions
+
+| Fringe type | Condition | Angular formula |
+|------------|-----------|----------------|
+| Bright ($m$-th order) | $\Delta d = n\lambda$ | $\sin\theta = \dfrac{n\lambda}{a}$ |
+| Dark ($n$-th order) | $\Delta d = (2n+1)\dfrac{\lambda}{2}$ | $\sin\theta = (2n+1)\dfrac{\lambda}{2a}$ |
+
+### Linear positions on screen
+
+For small angles ($\sin\theta \approx \tan\theta = x/L$):
+
+**Bright fringe position:**
+$$\boxed{x = n\frac{\lambda L}{a}} \qquad (n = 0, 1, 2, \ldots)$$
+
+**Dark fringe position:**
+$$\boxed{x = (2n+1)\frac{\lambda L}{2a}} \qquad (n = 0, 1, 2, \ldots)$$
+
+### Fringe spacing
+
+The separation between adjacent bright (or adjacent dark) fringes is constant:
+
+$$\boxed{i = \frac{\lambda L}{a}}$$
+
+<Note>
+The fringe spacing $i$ is the same for bright and dark fringes. A larger slit separation $a$ produces **closer** fringes; longer wavelength $\lambda$ or a more distant screen $L$ produces **wider** fringes.
+</Note>
+
+---
+
+## 10. Resonance (រ៉េសូណង់)
+
+The chapter closes with resonance — the tendency of an oscillating system to vibrate with maximum amplitude at particular frequencies. Two types are noted:
+
+- **Resonance in phase (រ៉េសូណង់ស្ទក់):** External driving force has the same frequency *and* phase as the natural frequency.
+- **Resonance out of phase (រ៉េសូណង់ឆ្មារ):** External force has the same frequency but a different phase.
+
+Practical examples include: musical instrument acoustics, clock chimes, radio/TV tuning circuits (electrical resonance), and vehicle vibration.

@@ -1,0 +1,115 @@
+---
+title: "Project Goals: What the Khmer Physics Handbook Aims to Deliver"
+sidebarTitle: "Project Goals"
+description: "The vision, scope, and design principles behind the Khmer Physics Handbook — a free, Khmer-language physics resource for Grade 12 students."
+---
+
+The Khmer Physics Handbook has a simple mission: give Cambodian Grade 12 students a physics textbook that is free, beautiful, and entirely in their own language. Every technical choice in the project — the typesetting engine, the font pipeline, the repository tooling, the aesthetic — exists in service of that mission. This page documents what the project is trying to be and where it is headed.
+
+## Core Goals
+
+### Free, Khmer-Language Physics for Grade 12 Students
+
+The handbook is released under a license that allows compiled PDFs to be shared freely for non-commercial education. No paywall, no registration, no institutional gatekeeping. The source is hosted openly on GitHub so that anyone can inspect, verify, and contribute to the content.
+
+The language of the book is Khmer throughout — prose, headings, captions, figure labels, and equations. This is not a translated document with Khmer headers bolted on; it is written in Khmer from the ground up.
+
+### Full Khmer Numeral System
+
+Every number in the book that lives outside of a mathematical expression is rendered in Khmer numerals: page numbers, section numbers, figure references, equation labels. The `\\khmernumraw{n}` macro converts Arabic digits; `\\khmernum{n}` produces a full page-number string with the prefix "ទំព័រទី".
+
+<Note>
+  Khmer numerals must live **outside** math mode. Inside `$...$` they fall back to `cmr12` and produce "Missing character" output in the build log. The house pattern is to place equation labels in a `center` environment after the `flalign*` block, never inside it.
+</Note>
+
+### The Sakura Aesthetic
+
+The project made a deliberate choice to look nothing like a government document. The sakura theme — soft pink tones, rounded boxes, floral `\\tanbgdivider` section dividers, a `bacpink` accent bar on definition panels — exists because students are more likely to open a book that looks like it was made with care.
+
+The theme was not adopted from an external package. The box aesthetic was ported from its inspiration into a custom `\\formulabox` implementation in `preamble.tex`. Colours (`primary`, `boxbg`, `boxframe`, `brownheader`, `bacpurple`, `bacpink`, `khmerred`, `wavered`, `waveblue`, `wavepurple`) are all defined centrally in `preamble.tex` so every chapter shares the same palette.
+
+### XeLaTeX + fontspec + HarfBuzz for Correct Khmer Shaping
+
+<Warning>
+  pdfLaTeX cannot shape Khmer text correctly and will produce broken output. XeLaTeX is the only supported engine for this project.
+</Warning>
+
+Khmer is an Indic-family script that requires OpenType shaping to render correctly — ligatures, vowel positioning, and cluster stacking all depend on the HarfBuzz renderer. The font stack is loaded via `fontspec` with `Script=Khmer, Renderer=HarfBuzz` explicitly set:
+
+- **Romnea** (`khmerpagenum`) — page numbers
+- **Ang TaPich** (`khmerheader`) — headings
+- **Moul** (`khmermoul`) — display titles
+- **Nunito** (`\\englishfont`) — Latin fallback
+
+All fonts live in the `fonts/` directory of the repository but must be installed **on the system** before building. XeLaTeX resolves fonts through the OS font cache, not from the working directory.
+
+```bash
+# Linux: install Khmer fonts from the repo
+cp fonts/*.ttf ~/.fonts/
+fc-cache -fv
+```
+
+On Windows and macOS, double-click each font file and choose "Install."
+
+### Git LFS for a Lightweight but Image-Rich Repository
+
+The `img/` directory is tracked with Git LFS. Every image extension is pinned to `filter=lfs` via `.gitattributes`, so adding a new figure under `img/` automatically routes it through LFS. The compiled `main.pdf` is the one deliberate exception — it is checked in as a normal file because it is the primary deliverable.
+
+If image files appear as ~130-byte text files after cloning, run:
+
+```bash
+git lfs install
+git lfs pull
+```
+
+## Target Audience
+
+<Tabs>
+  <Tab title="Students">
+    Cambodian Grade 12 students studying physics. The handbook covers the full Grade 12 syllabus across three chapters: kinetic theory, waves, and electromagnetism. It is written to be read, not just referenced — derivations are shown in full, figures are captioned in Khmer, and every key result is boxed for easy review.
+  </Tab>
+  <Tab title="Writers & Physics Reviewers">
+    Contributors who want to write new lesson content or verify the physics. The full workflow is documented in [CONTRIBUTING.md](https://github.com/airiharuki/physics_textbook/blob/main/CONTRIBUTING.md). Content follows Conventional Commits (`feat/fix/chore/...(chapter3): ...`) and every commit receives an annotated tag. OCR-pasted content needs a cleanup pass: strip citation markers, normalize Khmer terminology, and continue the book-wide figure and equation numbering sequence.
+  </Tab>
+  <Tab title="Figure Makers & Designers">
+    Contributors who produce TikZ vector graphics, circuit diagrams, or photo assets. Circuit diagrams use `circuitikz` loaded globally with `[american]` style; the house style for drawn circuits is `[line width=1.1pt, scale=0.72, transform shape]`. Photos always go through `\\khmerphoto[width]{path}{caption}` — never bare `\\includegraphics`. New colors and macros belong in `preamble.tex`.
+  </Tab>
+</Tabs>
+
+## Roadmap
+
+### Current State (alpha.15)
+
+| Item | Status |
+|---|---|
+| Chapter 1 — Kinetic Theory | ✅ Complete |
+| Chapter 2 — Waves & Interference | ✅ Complete |
+| Chapter 3 · Lesson 1 — Magnetism | ✅ Complete |
+| Chapter 3 · Lesson 2 — Electromagnetic Induction | ✅ Complete |
+| Chapter 3 · Lesson 3 — Self-Inductance, RL & LC Circuits | ✅ Complete |
+| Chapter 3 · Lesson 4 — Alternating Current | 🔄 In progress (opened in alpha.15) |
+| Chapter 3 · Lesson 5 | 🗓 Planned |
+
+The book currently stands at **83 pages**, with figures running to រូបទី៤១ and equations to (២៩).
+
+### What Comes Next
+
+The immediate pipeline is Chapter 3, Lesson 4 — ចរន្តឆ្លាស់ (alternating current):
+
+<Steps>
+  <Step title="AC Circuit Parameters & Effective Values">
+    RMS voltage and current, sinusoidal waveform parameters, and the relationship between peak and effective values.
+  </Step>
+  <Step title="Impedance & Phasor Diagrams">
+    Impedance in RLC series circuits, phasor representation, and AC phasor diagrams.
+  </Step>
+  <Step title="Power Factor">
+    Real power, reactive power, apparent power, and the power factor in AC circuits.
+  </Step>
+  <Step title="Resonance">
+    Resonance condition in RLC circuits, resonant frequency, and applications.
+  </Step>
+  <Step title="Lesson 5">
+    Content to be determined after Lesson 4 is complete.
+  </Step>
+</Steps>

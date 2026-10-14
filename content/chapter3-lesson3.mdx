@@ -1,0 +1,246 @@
+---
+title: "Chapter 3, Lesson 3: Self-Inductance, RL and LC Circuits"
+sidebarTitle: "RL & LC Circuits"
+description: "Mutual inductance, self-inductance, magnetic energy, RL circuit current growth and decay, LC oscillations, and total electromagnetic energy conservation."
+---
+
+Lesson 3 is the most mathematically intensive lesson in Chapter 3, covering **self-inductance** (អូតូអាំងឌុចស្យុង) and its two fundamental circuit applications: the **RL circuit** (where a resistor and inductor interact) and the **LC circuit** (where an inductor and capacitor exchange energy in oscillation). Equations (७)–(२९) — the longest run of new equations in the book — are introduced here, built up through the Kirchhoff loop rule, separation of variables, and the analogy between LC oscillations and mechanical simple harmonic motion.
+
+---
+
+## 1. Mutual Inductance (ម្យូချូអាំងឌុចស្យុង) — Equations (७)–(१४)
+
+### Two-coil system
+
+When the current $i_1$ in coil 1 changes, it alters the flux $\Phi_{B2}$ threading coil 2, inducing an EMF. By Faraday's law:
+
+$$e_2 = -N_2\frac{d\Phi_{B2}}{dt} \tag{७}$$
+
+The total flux linkage through coil 2 is **proportional** to the current in coil 1:
+
+$$N_2\Phi_2 = M_{21}\,i_1 \tag{८}$$
+
+Differentiating and substituting into (७):
+
+$$e_2 = -M_{21}\frac{di_1}{dt} \tag{९}$$
+
+Symmetrically, current changes in coil 2 induce in coil 1:
+
+$$N_1\Phi_1 = M_{12}\,i_2 \quad\Rightarrow\quad e_1 = -M_{12}\frac{di_2}{dt} \tag{१०–११}$$
+
+**Symmetry:** It can be shown that $M_{12} = M_{21}$, so a single **mutual inductance** $M$ describes both directions:
+
+$$\boxed{M_{12} = M_{21} = M} \tag{१२}$$
+
+**Photo in source:** รូបទី៣០ (`mutualinductance.png`) shows the two-coil geometry with shared magnetic flux linkage.
+
+**Units:** $[M] = \text{henry (H)} = \text{Wb/A} = \text{V·s/A}$
+
+---
+
+## 2. Self-Inductance (អូតូអាំងឌុចស្យុង) — Equations (१५)–(१८)
+
+### Inductance from geometry
+
+A changing current $i$ through a coil creates a changing flux through itself. The total flux linkage is proportional to the current:
+
+$$N\Phi = Li \tag{१५}$$
+
+For a solenoid of $N$ turns, length $l$, and cross-sectional area $A$:
+
+$$\boxed{L = \frac{\mu_0 N^2 A}{l}} \tag{१६}$$
+
+**Photo in source:** รូបទី៣៣ (`magneticfluxviasolenoid.png`) illustrates flux through a solenoid cross-section.
+
+### Self-induced EMF
+
+Differentiating (१५) and applying Faraday's law gives the **instantaneous self-induced EMF**:
+
+$$\boxed{e = -L\frac{di}{dt}} \tag{१७}$$
+
+For a finite time interval $\Delta t$ with current change $\Delta I$:
+
+$$\boxed{\mathcal{E} = -L\frac{\Delta I}{\Delta t}} \tag{१८}$$
+
+<Note>
+The negative sign means the self-induced EMF always **opposes the change** in its own current — an inductor resists sudden changes in current just as a capacitor resists sudden changes in voltage. Together this is why RL and LC circuits have characteristic time constants.
+</Note>
+
+---
+
+## 3. Magnetic Energy Stored in an Inductor — Equation (२०)
+
+The work done building current from $0$ to $I$ in an inductor (integrated from the power $p = Li\,di/dt$) is stored as magnetic energy in the field:
+
+$$\boxed{E_L = \frac{1}{2}LI^2} \tag{२०}$$
+
+**Symbol glossary:**
+
+| Symbol | Meaning | Unit |
+|--------|---------|------|
+| $E_L$ | Magnetic energy | J |
+| $L$ | Inductance | H |
+| $I$ | Current through inductor | A |
+
+<Tip>
+This is the magnetic analogue of the electric potential energy $E_C = \frac{1}{2}CV^2$ stored in a capacitor. The pair $(L, C)$ and $(E_L, E_C)$ are the key symmetry behind LC oscillations.
+</Tip>
+
+---
+
+## 4. RL Circuit — Switch Closed (Current Growth) — Equation (२१)
+
+### Setup and Kirchhoff loop rule
+
+When a switch is closed in a series RL circuit with EMF source $\mathcal{E}$, resistor $R$, and inductor $L$:
+
+$$-\mathcal{E} + V_L + V_R = 0
+\quad\Rightarrow\quad
+-\mathcal{E} + L\frac{di}{dt} + Ri = 0$$
+
+Rearranging and separating variables, then integrating (using the integration helper $\int \frac{dx}{a - bx} = -\frac{1}{b}\ln|a - bx|$):
+
+$$\boxed{i(t) = I_m\!\left(1 - e^{-t/\tau_{RL}}\right)} \tag{२१}$$
+
+where the **steady-state current** is $I_m = \mathcal{E}/R$ and the **RL time constant** is:
+
+$$\tau_{RL} = \frac{L}{R}$$
+
+**TikZ figure in source:** รូបទី៣៦ — exponential charging curve with numerical data table at $t = \tau, 2\tau, \ldots, 5\tau$, annotated with key values.
+
+<Accordion title="Physical interpretation of τ_RL">
+
+At $t = \tau_{RL}$: the current has risen to $I_m(1 - e^{-1}) \approx 0.632\,I_m$ — about 63% of its final value.  
+At $t = 5\tau_{RL}$: the current is within 1% of $I_m$, considered "fully established."  
+
+A large $L/R$ ratio means a long time constant — the inductor strongly resists the growing current. A small $L/R$ ratio means the current rises quickly.
+
+</Accordion>
+
+---
+
+## 5. RL Circuit — Switch Opened (Current Decay) — Equation (२२)
+
+When the EMF source is disconnected and the inductor drives current through $R$, the Kirchhoff equation becomes:
+
+$$Ri + L\frac{di}{dt} = 0$$
+
+Separating variables and integrating gives the **exponential decay**:
+
+$$\boxed{i(t) = I_m\,e^{-t/\tau_{RL}}} \tag{२२}$$
+
+The same time constant $\tau_{RL} = L/R$ governs the decay.
+
+**TikZ figure in source:** รូបទី៣៧ — exponential decay curve with numerical data table, labelled *ក្រាបនៃសៀគ្វី RL ពេលផ្ទេរចរន្តចេញពីប៊ូប៊ីន*.
+
+---
+
+## 6. LC Circuit — Charging Phase — Equations (२३)–(२४)
+
+### Initial charge on capacitor
+
+With the SPDT switch set to terminal $a$, the capacitor $C$ charges from EMF source $\mathcal{E}$ to:
+
+$$Q_0 = C\mathcal{E} \tag{२३}$$
+
+The electrostatic energy stored is:
+
+$$\boxed{E_E = \frac{1}{2}C\mathcal{E}^2} \tag{२४}$$
+
+**CircuitikZ figure in source:** รូបទី៣๙ — vector circuit diagram showing the SPDT switch at terminal $a$, capacitor, and initial conditions $q(0) = Q_0$, $i(0) = 0$.
+
+---
+
+## 7. LC Circuit — Oscillation Phase — Equations (२५)–(२८)
+
+### Kirchhoff loop equation
+
+When the switch moves to terminal $b$, the capacitor is isolated with the inductor. With the sign convention $i = -dq/dt$ (capacitor discharges):
+
+$$-v_C + v_L = 0
+\quad\Rightarrow\quad
+-\frac{q}{C} + L\frac{di}{dt} = 0$$
+
+Substituting $i = -dq/dt$:
+
+$$\boxed{\frac{d^2q}{dt^2} + \frac{1}{LC}q = 0} \tag{२५}$$
+
+This is identical in form to the SHM equation $\ddot{x} + \omega^2 x = 0$, confirming LC oscillations are the electromagnetic analogue of a mass-spring system.
+
+**CircuitikZ figure in source:** รូปที่๔๐ — SPDT switch at terminal $b$ showing the closed LC loop.
+
+### General solution
+
+The charge oscillates as:
+
+$$\boxed{q(t) = q_{max}\cos(\omega t + \varphi)} \tag{२६}$$
+
+with angular frequency $\omega = 1/\sqrt{LC}$.
+
+The instantaneous current:
+
+$$\boxed{i(t) = -I_{max}\sin(\omega t + \varphi)} \tag{२७}$$
+
+where $I_{max} = \omega\,q_{max}$.
+
+### Natural period
+
+$$\boxed{\tau_{LC} = T = 2\pi\sqrt{LC}} \tag{२८}$$
+
+**TikZ figure in source:** รูบที่๔๑ — dual-subplot vector figure plotting charge $q(t)$ (brownheader colour) and current $i(t)$ (primary colour) on separate axes, with vertical dashed alignment lines at $T/4$, $T/2$, $3T/4$, $T$ illustrating the 90° phase offset between $q$ and $i$.
+
+<Accordion title="Analogy: LC oscillator ↔ mass-spring oscillator">
+
+| LC circuit | Mass-spring system |
+|-----------|-------------------|
+| Charge $q$ | Displacement $x$ |
+| Current $i = dq/dt$ | Velocity $v = dx/dt$ |
+| Inductance $L$ | Mass $m$ |
+| $1/C$ | Spring constant $k$ |
+| $\omega = 1/\sqrt{LC}$ | $\omega = \sqrt{k/m}$ |
+| Magnetic energy $\frac{1}{2}Li^2$ | Kinetic energy $\frac{1}{2}mv^2$ |
+| Electric energy $\frac{1}{2}q^2/C$ | Potential energy $\frac{1}{2}kx^2$ |
+
+</Accordion>
+
+---
+
+## 8. Total Electromagnetic Energy — Equation (२९)
+
+In an ideal (lossless) LC circuit, energy shuttles between the inductor's magnetic field and the capacitor's electric field with no dissipation. The total energy is constant:
+
+$$\boxed{E = E_L + E_C = \frac{1}{2}Li^2 + \frac{1}{2}Cv^2 = \text{constant}} \tag{२९}$$
+
+Evaluated at extreme points:
+
+$$E = \frac{1}{2}LI_{max}^2 = \frac{Q_0^2}{2C} = \frac{1}{2}C\mathcal{E}^2$$
+
+<Note>
+In a real circuit, resistance dissipates energy and the oscillations are **damped**. The LC model is the ideal limit $R \to 0$. Including a small resistance leads to the damped RLC oscillator, which is the topic of later lessons.
+</Note>
+
+---
+
+## 9. Equation Summary — Lesson 3
+
+| Eq. # | Formula | Quantity |
+|-------|---------|---------|
+| (७) | $e_2 = -N_2\,d\Phi_{B2}/dt$ | Mutual induction EMF |
+| (८) | $N_2\Phi_2 = M_{21}\,i_1$ | Flux linkage definition |
+| (९) | $e_2 = -M\,di_1/dt$ | Mutual induction formula |
+| (१२) | $M_{12} = M_{21} = M$ | Symmetry of mutual inductance |
+| (१५) | $N\Phi = Li$ | Self-inductance definition |
+| (१६) | $L = \mu_0 N^2 A / l$ | Solenoid inductance |
+| (१७) | $e = -L\,di/dt$ | Instantaneous self-induced EMF |
+| (१८) | $\mathcal{E} = -L\,\Delta I/\Delta t$ | Average self-induced EMF |
+| (२०) | $E_L = \frac{1}{2}LI^2$ | Magnetic energy in inductor |
+| (२१) | $i(t) = I_m(1 - e^{-t/\tau_{RL}})$ | RL current growth |
+| (२१) | $\tau_{RL} = L/R$ | RL time constant |
+| (२２) | $i(t) = I_m\,e^{-t/\tau_{RL}}$ | RL current decay |
+| (२३) | $Q_0 = C\mathcal{E}$ | Initial capacitor charge |
+| (२४) | $E_E = \frac{1}{2}C\mathcal{E}^2$ | Initial electric energy |
+| (२५) | $d^2q/dt^2 + q/LC = 0$ | LC oscillation ODE |
+| (२६) | $q(t) = q_{max}\cos(\omega t + \varphi)$ | Charge oscillation |
+| (२७) | $i(t) = -I_{max}\sin(\omega t + \varphi)$ | Current oscillation |
+| (२८) | $T = 2\pi\sqrt{LC}$ | LC natural period |
+| (२९) | $E = \frac{1}{2}Li^2 + \frac{1}{2}Cv^2$ | Total electromagnetic energy |

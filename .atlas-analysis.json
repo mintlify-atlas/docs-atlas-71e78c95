@@ -1,0 +1,134 @@
+{
+  "projectType": "general",
+  "projectName": "Khmer Physics Handbook",
+  "projectDescription": "A Grade 12 physics handbook for Cambodian students, written in Khmer with Khmer numerals throughout, typeset in XeLaTeX with a custom sakura-themed design system.",
+  "theme": "willow",
+  "primaryColor": "#BA55D3",
+  "lightColor": "#FDEBF6",
+  "darkColor": "#7C3AED",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "About the Handbook",
+        "groups": [
+          {
+            "group": "Overview",
+            "pages": [
+              "introduction",
+              "project-goals",
+              "changelog"
+            ]
+          },
+          {
+            "group": "Getting Started",
+            "pages": [
+              "prerequisites",
+              "building",
+              "folder-structure"
+            ]
+          },
+          {
+            "group": "Contributing",
+            "pages": [
+              "contributing-guide",
+              "conventions",
+              "issue-templates"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Typesetting Reference",
+        "groups": [
+          {
+            "group": "Design System",
+            "pages": [
+              "design/colors-and-fonts",
+              "design/page-layout"
+            ]
+          },
+          {
+            "group": "Macro Reference",
+            "pages": [
+              "macros/structure-macros",
+              "macros/box-macros",
+              "macros/figure-macros",
+              "macros/khmer-numerals"
+            ]
+          },
+          {
+            "group": "Authoring Guides",
+            "pages": [
+              "authoring/adding-a-chapter",
+              "authoring/equations-and-numbering",
+              "authoring/known-issues"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Content Reference",
+        "groups": [
+          {
+            "group": "Chapter 1 — Kinetic Theory",
+            "pages": [
+              "content/chapter1-overview"
+            ]
+          },
+          {
+            "group": "Chapter 2 — Waves",
+            "pages": [
+              "content/chapter2-overview"
+            ]
+          },
+          {
+            "group": "Chapter 3 — Electromagnetism",
+            "pages": [
+              "content/chapter3-lesson1",
+              "content/chapter3-lesson2",
+              "content/chapter3-lesson3",
+              "content/chapter3-lesson4"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "Full Khmer language typesetting via XeLaTeX and fontspec with HarfBuzz renderer",
+    "Khmer numeral system throughout — pages, equations, figures, and section numbers",
+    "Custom sakura-themed design system: pink/purple palette, floral dividers, rounded formula boxes",
+    "Git LFS-managed image assets for a lightweight cloneable repository",
+    "latexmk-based build system with auto-reruns (no manual double-compile needed)",
+    "Conventional Commits enforced via .githooks/commit-msg hook",
+    "circuitikz integration for vector RL and LC circuit diagrams",
+    "QR-code-linked YouTube video boxes (\\khmervideobox) for supplementary content",
+    "83-page compiled handbook covering kinetic theory, waves, and electromagnetism",
+    "Covers Grade 12 syllabus: Chapter 1 (kinetic theory), Chapter 2 (waves & interference), Chapter 3 (magnetism, induction, self-inductance, RL/LC circuits, alternating current)"
+  ],
+  "publicApiSurface": [
+    "\\khmerchapter{title}",
+    "\\khmerlesson{title}",
+    "\\khmertopic{title}",
+    "\\khmersubtopic{title}",
+    "\\khmersubsubtopic{title}",
+    "\\khmerornatetitle{full}{short}",
+    "\\khmerchapterbanner{num}{title}{imgpath}",
+    "\\khmerbannerphoto{path}",
+    "\\khmerphoto[width]{path}{caption}",
+    "\\khmervideobox{video-id}{title}{caption}",
+    "\\quickformula{...}",
+    "\\formulabox[opts]{title}{...}",
+    "\\defbox{...}",
+    "\\points{...}",
+    "\\tanbgdivider",
+    "\\khmernumraw{n}",
+    "\\khmernum{n}",
+    "\\khmercircnum{n}",
+    "build.sh",
+    "build.cmd",
+    "latexmk main.tex",
+    "latexmk -pvc main.tex",
+    "latexmk -C main.tex"
+  ]
+}

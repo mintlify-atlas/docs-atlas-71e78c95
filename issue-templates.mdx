@@ -1,0 +1,122 @@
+---
+title: "GitHub Issue Templates for Reporting Bugs and Proposals"
+sidebarTitle: "Issue Templates"
+description: "Three GitHub issue templates cover content errors, build failures, and feature proposals. Learn which to use and what information each one requests."
+---
+
+The Khmer Physics Handbook uses structured issue templates so that every report arrives with exactly the context needed — page numbers, LaTeX snippets, system logs — to jump straight to a fix without endless back-and-forth. Blank issues are disabled; every new issue must use one of the three templates below.
+
+To open a new issue, visit: **[github.com/airiharuki/physics_textbook/issues/new/choose](https://github.com/airiharuki/physics_textbook/issues/new/choose)**
+
+---
+
+## Which Template to Use
+
+| Template | Best for | What it asks |
+|---|---|---|
+| 📝 **Content Error / Typo** | Physics formula mistakes, Khmer typos, incorrect units, notation slip-ups | Chapter and lesson, PDF page number, current LaTeX vs. suggested correction, source citation, standard spelling check |
+| 🚨 **Build or Typesetting Bug** | XeLaTeX build failures, missing font glyphs, broken Khmer shaping, Git LFS pointer files, minipage layout overflow | OS, TeX Live/XeLaTeX version, build method, terminal log output, gotcha self-check |
+| 💡 **Content or Diagram Proposal** | New lesson section, TikZ vector diagram, high-resolution photo, QR video box (`\khmervideobox`) | Target chapter and lesson, proposed topic title, asset type, draft formulas or TikZ sketches |
+
+---
+
+## 📝 Content Error / Typo
+
+### When to use it
+
+Use this template when you have found something **wrong with the physics content or the Khmer text**: a formula with a sign error, an incorrect unit, a wrong value in a derivation, a Khmer spelling that does not match the project's standard terms, or a notation inconsistency. If you can see the error in the compiled PDF, this is the right template.
+
+### Key fields it requests
+
+- **Chapter / Lesson** — e.g. "Chapter 3, Lesson 2 / ជំពូកទី៣ មេរៀនទី២"
+- **Section / Subsection** — e.g. "២.៤ សៀគ្វីគ្មានអាំងឌុចតង់"
+- **Page number** — the page number in the compiled PDF
+- **Equation / Figure number** — e.g. "សមីការ (១៦)" or "រូបទី៣៣"
+- **Current text / formula** — paste the current LaTeX exactly as it appears in the source
+- **Suggested correction** — paste the corrected LaTeX
+- **Reference / Source** — cite the MoEYS textbook, a standard physics source, or a page number
+
+The template also includes a checklist:
+- Checked against the standardized terms (`ម៉ាញេទិក`, `សូលេណូអុីត`, `វ៉ិចទ័រ`)
+- If an equation: verified that Khmer numeral labels `(១...)` are placed **outside** `$...$` math mode
+
+<Tip>
+  The single most important piece of information in a content issue is the **exact PDF page number** alongside the current and corrected LaTeX snippets. Without the page number, reviewers have to hunt through 83+ pages to locate the error. With it, the fix is a one-minute job.
+</Tip>
+
+---
+
+## 🚨 Build or Typesetting Bug
+
+### When to use it
+
+Use this template when the **build itself fails or the PDF renders incorrectly**: XeLaTeX throws an error, a Khmer font glyph is missing or garbled, a `minipage` block overflows the page, Git LFS gave you 130-byte pointer files instead of real images, or a crashed run left a corrupted `main.out`/`main.toc` causing a `Runaway argument` error on the next build.
+
+### Key fields it requests
+
+**Environment:**
+- Operating system (Windows / Linux / macOS)
+- TeX Live / XeLaTeX version (run `xelatex --version` or check TeX Live year)
+- Build method used: `build.cmd`, `./build.sh`, or `latexmk main.tex`
+
+**Steps to reproduce:**
+- Whether you ran `git lfs pull` before building
+- The exact command you ran
+- What error or visual glitch was observed
+
+**Log output / screenshots:**
+- A paste of the relevant snippet from the terminal or from `main.log`
+- A screenshot if the issue is a visual rendering glitch (broken font shaping, missing character box, minipage overflow)
+
+**Common gotcha self-check (the template asks you to tick these):**
+- [ ] Have you run `git lfs pull` so images under `img/` aren't 130-byte pointer files?
+- [ ] Have you run `latexmk -C main.tex` to clear a corrupted bookmark/TOC cache?
+- [ ] Are the fonts in `fonts/` installed on your system (not just sitting in the repo)?
+
+<Tip>
+  The most important piece of information in a build issue is the **log output** — paste the relevant lines from the terminal or from `main.log` directly into the issue. Screenshots of a visual glitch are the next most useful thing. Without logs, diagnosing a build failure is guesswork.
+</Tip>
+
+<Note>
+  Before opening a build issue, work through the self-check items in the template. The three most common build failures — LFS pointer files, stale aux files, and missing system fonts — each have a documented one-command fix. Running through the checklist first often resolves the issue without needing a report at all.
+</Note>
+
+---
+
+## 💡 Content or Diagram Proposal
+
+### When to use it
+
+Use this template when you want to **add something new** to the handbook: a lesson section that is missing, a TikZ vector diagram to illustrate a concept, a high-resolution demonstration photo, or a `\khmervideobox` linking to a YouTube resource. Use it also if you want to improve an existing section in a way that is larger than a sentence-level edit.
+
+### Key fields it requests
+
+- **Proposal overview** — a plain-language description of the concept, diagram, or educational material you want to add or improve
+- **Target chapter / lesson** — e.g. "Chapter 3, Lesson 4"
+- **Proposed section / topic title** — the Khmer or English heading the new content would live under
+- **Type of asset** — one of:
+  - TikZ diagram
+  - Photo / Image (`\khmerphoto`)
+  - Video box (`\khmervideobox`)
+  - Derivation / formula box (`\formulabox`)
+- **Text / formula draft** — if you have a LaTeX draft, paste it; even a rough sketch is useful
+
+<Tip>
+  The most useful thing you can include in a proposal is a **draft formula or TikZ sketch**, even if it is rough. A concrete starting point — even a few lines of LaTeX — lets the maintainers assess feasibility immediately and gives the eventual implementer a foundation to work from.
+</Tip>
+
+---
+
+## General Guidance
+
+<Accordion title="Blank issues are disabled — you must use a template">
+  The `.github/ISSUE_TEMPLATE/` directory in the repository configures GitHub to require a template for every new issue. The "Open a blank issue" option is not available. If you try to submit without a template, GitHub will redirect you to the template chooser.
+
+  This is intentional: the templates collect exactly the context (page numbers, LaTeX snippets, system logs) needed to act on an issue quickly. A blank issue usually results in a back-and-forth comment thread asking for the same information the template would have captured upfront.
+</Accordion>
+
+<Accordion title="What happens after you file an issue">
+  Issues are reviewed by the maintainer and labeled with `content`, `bug`, `build`, or `enhancement` depending on the template used. If the issue is actionable, it will either be picked up directly or left open for a contributor to claim. If more information is needed, a comment will ask for it — respond in the same thread to keep context together.
+
+  For content errors and build bugs, a linked pull request with the fix is the fastest path to resolution. For proposals, the discussion in the issue is where the shape of the change gets agreed on before anyone starts writing LaTeX.
+</Accordion>

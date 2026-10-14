@@ -1,0 +1,178 @@
+---
+title: "Khmer Numeral Macros: \\khmernumraw and \\khmernum"
+sidebarTitle: "Khmer Numerals"
+description: "How \\khmernumraw and \\khmernum convert Arabic integers to Khmer digits, plus \\khmerdigit for single digits and the critical rule against using Khmer numerals inside math mode."
+---
+
+Every number visible in the Khmer Physics Handbook — page numbers, equation labels, figure numbers, section counters — is rendered in Khmer script using a set of conversion macros defined in `preamble.tex`. This page documents those macros, the implementation choices behind them, and the one rule that must never be broken: **Khmer numeral macros must not appear inside math mode**.
+
+---
+
+## `\khmerdigit{0–9}`
+
+The atomic building block for all Khmer numeral output. Maps a single Arabic digit (0–9) to its Khmer Unicode equivalent using `\ifcase`.
+
+**Signature:** `\khmerdigit{n}`
+
+<ParamField path="n" type="integer 0–9">
+  A single digit literal. The `\ifcase` dispatch is:
+  `0→០`, `1→១`, `2→២`, `3→៣`, `4→៤`, `5→៥`, `6→៦`, `7→៧`, `8→៨`, `9→៩`.
+</ParamField>
+
+```latex
+\khmerdigit{0}  % → ០
+\khmerdigit{5}  % → ៥
+\khmerdigit{9}  % → ៩
+```
+
+`\khmerdigit` accepts only single digit literals. For multi-digit numbers, use `\khmernumraw` (which calls `\khmerdigit` internally via the `\khmer@donums` helper).
+
+---
+
+## `\khmernumraw{n}`
+
+Converts any non-negative integer to its Khmer numeral string. Safe for page numbers, equation labels, section numbers, and figure numbers.
+
+**Signature:** `\khmernumraw{n}`
+
+<ParamField path="n" type="non-negative integer or counter expression">
+  The number to convert. Can be a literal integer (`42`), a TeX counter reference (`\thepage`, `\arabic{page}`, `\value{equation}`), or any token that expands to a non-negative integer.
+</ParamField>
+
+```latex
+\khmernumraw{7}           % → ៧
+\khmernumraw{42}          % → ៤២
+\khmernumraw{2026}        % → ២០២៦
+\khmernumraw{\thepage}    % → current page in Khmer digits
+```
+
+### Implementation notes
+
+Two deliberate design choices distinguish this implementation from a naïve approach:
+
+**1. `\count` register division, not `\numexpr`.**
+e-TeX's `\numexpr` integer division **rounds to the nearest integer** rather than truncating toward zero. Concretely, `\numexpr 15/10\relax` evaluates to `2` (not `1`), which silently corrupts the tens digit of any page or equation number whose remainder rounds up. `\count` register `\divide` truncates toward zero like standard integer division, producing the correct result. This is why the macro uses `\count8`, `\count9`, and `\count7` for the quotient/remainder decomposition rather than `\numexpr`.
+
+**2. Argument normalization into a register before any comparison.**
+If an unexpanded macro like `\arabic{page}` or `\value{page}` is passed as `#1` and then used directly in both an `\ifnum#1<10` test and a later `\count` assignment, the two re-expansions of `#1` can desync — the `\ifnum` comparison and the register copy end up seeing different partial-expansion states, silently truncating a two-digit result to one digit. The macro therefore assigns `#1` into `\count9` as its very first step (`\count9=#1\relax`), then all downstream logic reads `\count9` instead of re-expanding `#1`.
+
+---
+
+## `\khmernum{n}`
+
+The page-number macro used in the footer. Prefixes the Khmer numeral with the phrase `ទំព័រទី ` ("page number") rendered in the `\khmerpagenum` font (Romnea), then appends `\khmernumraw{n}`.
+
+**Signature:** `\khmernum{n}`
+
+<ParamField path="n" type="non-negative integer or counter expression">
+  Same as `\khmernumraw`. In practice always called as `\khmernum{\thepage}` from the `fancyhdr` footer definition.
+</ParamField>
+
+```latex
+\khmernum{42}          % → ទំព័រទី ៤២
+\khmernum{\thepage}    % → ទំព័រទី [current page in Khmer]
+```
+
+The footer in `preamble.tex` calls:
+
+```latex
+\fancyfoot[LO,RE]{%
+    \small\textcolor{bacpurple}{\khmernum{\thepage}}%
+}
+```
+
+---
+
+## `\khmercircnum{n}`
+
+Renders a single digit inside a `primary`-colored circle, matching the ①②③ style used in objective lists. Implemented with `tikz`: a `circle` node with `draw=primary`, `line width=1pt`, `minimum size=17pt`, containing `\khmerpagenum\khmerdigit{#1}` in `\small\bfseries`. The node is baseline-adjusted with `[baseline=-0.65ex]`.
+
+**Signature:** `\khmercircnum{n}`
+
+<ParamField path="n" type="integer 0–9">
+  A single digit (0–9), passed directly to `\khmerdigit`. Only single-digit values are supported by the underlying `\khmerdigit` dispatch.
+</ParamField>
+
+```latex
+\khmercircnum{1} ស្វែងយល់ពីច្បាប់ Faraday\\
+\khmercircnum{2} គណនា EMF ដែលបណ្ដាលឱ្យ\\
+\khmercircnum{3} ពណ៌នាអំពី Lenz's law
+```
+
+<Tip>
+  `\khmercircnum` is suitable for numbered objective or step lists. For inline equation numbering (e.g. "(7)") use `\khmernumraw` outside math mode instead — see the critical rule below.
+</Tip>
+
+---
+
+## Critical rule — NEVER use Khmer numerals inside math mode
+
+This is the single most important constraint for anyone adding equation numbers or labels.
+
+**Inside `$...$` or `\[...\]`, Khmer numeral macros fall back to the `cmr12` font** (Computer Modern Roman 12pt) because XeLaTeX's math mode does not use HarfBuzz-shaped OpenType fonts. The result is a cascade of `Missing character: There is no ២ in font cmr12!` warnings in `main.log`, and the Khmer digit either vanishes or renders as a garbage Latin glyph. The compiled PDF looks wrong and the log is polluted.
+
+### Correct pattern — equation number outside math mode
+
+```latex
+\begin{flalign*}
+    \mathcal{E} &= -N\frac{d\Phi_B}{dt} &
+\end{flalign*}
+\begin{center}
+    $\boxed{\mathcal{E} = -N\frac{d\Phi_B}{dt}}$ \quad (\khmernumraw{7})
+\end{center}
+```
+
+The boxed equation is a math expression; the `(\khmernumraw{7})` label is placed **after** the closing `$`, in text mode, inside a `center` environment.
+
+### Wrong pattern — numeral inside math mode
+
+```latex
+% DO NOT DO THIS
+$F = BIL \quad (\khmernumraw{7})$
+```
+
+The `\khmernumraw{7}` inside `$...$` triggers `cmr12` fallback and produces missing-character warnings.
+
+### Summary table
+
+| Context | Correct? | Notes |
+|---|---|---|
+| `(\khmernumraw{7})` after `$\boxed{...}$` | ✅ Yes | Outside math mode |
+| `\khmernumraw{\thepage}` in footer | ✅ Yes | Plain text mode |
+| `\khmercircnum{3}` in `itemize` | ✅ Yes | Text mode |
+| `$F = BIL \quad (\khmernumraw{7})$` | ❌ No | Inside math mode |
+| `\[ E = mc^2 \quad \text{(\khmernumraw{5})} \]` | ❌ No | `\text{}` is still math-mode adjacent; use `center` + separate `$\boxed{}$` instead |
+
+---
+
+## `\kstar` and `\kstarfour`
+
+Two Unicode star glyphs used for decorative list markers and visual accents throughout the handbook.
+
+**`\kstar`** → ★ (5-point star, U+2605)
+**`\kstarfour`** → ✦ (4-point star/sparkle, U+2736)
+
+Both are rendered through `\khmersymbolfont` (DejaVu Sans), colored `bacpink` (`#F45BA0`).
+
+```latex
+\kstar  ចំណុចសំខាន់ ១
+\kstarfour  ចំណុចសំខាន់ ២
+```
+
+### Why a separate font is needed
+
+The `\ding{}` command from the `pifont` package uses an 8-bit font-encoding switch to reach the Zapf Dingbats symbol font. Under XeLaTeX when a custom `fontspec`-loaded Khmer font is active at the point of use, that encoding switch can silently fail and fall back to typesetting the raw code point as plain ASCII — so `\ding{100}` renders as the literal letter `d` (ASCII/Unicode decimal 100) rather than the intended dingbat.
+
+The fix is to use the real Unicode code points directly through a font guaranteed to contain them. DejaVu Sans ships with TeX Live and reliably holds both `★` and `✦`. The `\khmersymbolfont` family is declared with `\defaultfontfeatures{}` (clearing the global `Path/Script/Renderer` defaults) specifically so it is loaded as a plain Latin font rather than a Khmer-shaped one:
+
+```latex
+\defaultfontfeatures{}   % clear Path/Script/Renderer for this one font
+\newfontfamily\khmersymbolfont{DejaVu Sans}
+\defaultfontfeatures{Path = fonts/, Script = Khmer, Renderer = HarfBuzz, HyphenChar = None}
+\newcommand{\kstar}{{\khmersymbolfont\color{bacpink}★}}
+\newcommand{\kstarfour}{{\khmersymbolfont\color{bacpink}✦}}
+```
+
+<Note>
+  The `\defaultfontfeatures{}` reset before the DejaVu Sans declaration, and the restore after it, are both load-order critical. Do not rearrange them. The Khmer fonts declared after this block in `preamble.tex` depend on the restored `Script=Khmer, Renderer=HarfBuzz` defaults.
+</Note>

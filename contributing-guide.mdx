@@ -1,0 +1,221 @@
+---
+title: "How to Contribute to the Khmer Physics Handbook"
+sidebarTitle: "Contribution Guide"
+description: "Step-by-step guide for contributing to the handbook: install Git LFS, fork, branch, build, make changes, and open a pull request with a clean build."
+---
+
+The Khmer Physics Handbook is a free, open-source Grade 12 textbook written in Khmer for Cambodian students. Every paragraph you fix, every formula you verify, and every figure you draw ends up in the hands of students studying for one of the most stressful exams of their lives — typeset in their own language and numerals, with a look that makes them actually want to open it. You do not need to be a LaTeX wizard or a physics professor to contribute; you need to care a little and be willing to learn the rest.
+
+<Note>
+  Before touching any typesetting, read **AGENTS.md** in the repository root. It contains the full macro inventory, layout patterns, and Khmer-specific traps (numerals outside math mode, HarfBuzz renderer, LFS pointer gotchas). It is short and it will save you real pain.
+</Note>
+
+## Who We're Looking For
+
+The project welcomes contributors of all kinds:
+
+- **Writers & editors** — content already exists, but clarity can always be better. If a sentence makes you squint, fix it.
+- **Proofreaders** — Khmer spelling, grammar, and the project's strict standard spellings (see the [Conventions](/conventions) page).
+- **Math reviewers** — equations, units, values, derivations. Physics should be correct before it is pretty.
+- **Figure makers** — TikZ diagrams, hand-drawn scans, any image that makes a concept click.
+- **OCR survivors** — the project sometimes starts from scanned pages. If you have wrestled a messy OCR dump into clean LaTeX, you belong here.
+- **Design souls** — contributors who treasure the sakura boxes and want to make the layout more consistent.
+
+---
+
+## Full Contribution Workflow
+
+<Steps>
+  ### Install Git LFS and clone the repository
+
+  All photos and figures live in **Git LFS** (Large File Storage). Cloning without it gives you tiny 130-byte pointer files instead of real images, and the book will refuse to build. Install Git LFS first, then clone:
+
+  ```bash
+  # Install Git LFS once (https://git-lfs.com, or your package manager)
+  # Linux:   sudo apt install git-lfs
+  # macOS:   brew install git-lfs
+  # Windows: choco install git-lfs
+
+  git lfs install
+  git lfs clone https://github.com/airiharuki/physics_textbook.git
+  cd physics_textbook
+  ```
+
+  Already cloned, or images went missing after a pull? No re-clone needed:
+
+  ```bash
+  git lfs install   # just in case
+  git lfs pull      # fetch and place every LFS file
+  ```
+
+  To verify you have real image data, run `git lfs ls-files -l`. Every file in `img/` should show a real file size. If `img/deflexion.jpg` is ~130 bytes and reads like `<0a8f…>`, you haven't pulled yet.
+
+  ### Install the fonts onto your system
+
+  XeLaTeX needs the Khmer and Latin fonts registered with the operating system — it will not find them just because they sit inside the repository.
+
+  Install the fonts from the `fonts/` directory:
+
+  | OS | How to install |
+  |---|---|
+  | Linux | Copy to `~/.fonts/` or `/usr/share/fonts/`, then run `fc-cache -fv` |
+  | Windows | Double-click each font file and click **Install** |
+  | macOS | Double-click each font file and click **Install Font** |
+
+  <Warning>
+    Skipping this step causes XeLaTeX to fail silently or produce garbled Khmer glyphs. Install the fonts before attempting your first build.
+  </Warning>
+
+  ### Fork on GitHub and add the upstream remote
+
+  Fork the repository on GitHub so you have your own copy to work freely in, then add the original repository as `upstream` so you can stay in sync:
+
+  ```bash
+  # Clone YOUR fork (replace <your-github-username>)
+  git lfs clone https://github.com/<your-github-username>/physics_textbook.git
+  cd physics_textbook
+
+  # Add the original as upstream
+  git remote add upstream https://github.com/airiharuki/physics_textbook.git
+
+  # Verify both remotes are registered
+  git remote -v
+  ```
+
+  You should see both `origin` (your fork) and `upstream` (the original) listed.
+
+  <Tip>
+    Run `git pull upstream main` **before you start any task** so you are never working against a moving target.
+  </Tip>
+
+  ### Create a branch — never work on main directly
+
+  Give your change a descriptive name that reflects what it does:
+
+  ```bash
+  git checkout -b fix/typo-chapter3
+  ```
+
+  Branch naming examples: `fix/typo-chapter3`, `feat/ch4-ac-circuits`, `docs/update-readme`.
+
+  ### Make your changes
+
+  The primary source files you will touch are:
+
+  | File / Directory | Purpose |
+  |---|---|
+  | `chapters/*.tex` | Chapter content — lessons, derivations, figures |
+  | `banners/*.tex` | Chapter opening banner pages |
+  | `img/` | Photos and figures (Git LFS tracked) |
+  | `preamble.tex` | Shared macros, fonts, colors — add new macros here, never per-chapter |
+
+  For anything larger than a sentence fix, open an issue first using the [issue templates](https://github.com/airiharuki/physics_textbook/issues/new/choose) so the maintainers can agree on the shape of the change before you invest time in it.
+
+  <Note>
+    See the full list of mandatory typesetting conventions — spelling tables, macro rules, box layout, numbering — on the [Conventions](/conventions) page.
+  </Note>
+
+  ### Build and verify a clean output
+
+  Run the build script and confirm the output is completely clean. A clean build is your ticket to open a pull request.
+
+  ```bash
+  bash build.sh   # Linux / macOS
+  ```
+
+  ```bat
+  build.cmd       # Windows
+  ```
+
+  Both scripts use **latexmk**, which automatically runs as many XeLaTeX passes as the book needs (TOC and page references stop lying, and you never have to press twice). On error, the script stays open with the error visible until you press a key.
+
+  **The house check — all four must pass:**
+
+  | Check | What to look for |
+  |---|---|
+  | Exit code | `exit=0` |
+  | Errors | `errors: 0` (no `^!` lines in `main.log`) |
+  | Missing characters | `missing chars: 0` |
+  | Page count | "Output written" page count looks right |
+
+  <Warning>
+    A handful of pre-existing underfull/overfull hbox warnings in lesson-2 topic titles is not a regression. A sudden jump in warning count is.
+  </Warning>
+
+  After a clean build, flip through every page you touched. No overlapping text, no overflowing boxes.
+
+  **Auto-rebuild on every save** (optional but useful):
+
+  ```bash
+  latexmk -xelatex -pvc main.tex
+  ```
+
+  If the build dies mid-run and the next attempt throws `Runaway argument` at hyperref bookmarks, clear the stale aux files and rebuild:
+
+  ```bash
+  latexmk -C main.tex
+  bash build.sh
+  ```
+
+  ### Commit using Conventional Commits format
+
+  The repository enforces the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) specification via a `commit-msg` hook in `.githooks/commit-msg`. A plain message like `git commit -m "add flux section"` will be bounced with a lesson. Use the required format:
+
+  ```bash
+  git add chapters/chapter3.tex main.pdf
+  git commit -m "feat(ch3): add Lorentz force derivation"
+  ```
+
+  See the [Conventions](/conventions) page for the full commit message format, available types, and examples.
+
+  <Note>
+    **Include `main.pdf` in your commit.** The project ships the compiled book, so your rebuilt PDF must ride along with the source changes.
+  </Note>
+
+  ### Push to your fork and open a pull request
+
+  Push your branch to your fork and open a pull request against the original repository:
+
+  ```bash
+  git push -u origin fix/typo-chapter3
+  ```
+
+  Head to GitHub — a bright yellow **Compare & pull request** banner will appear. In the PR description include:
+
+  - What you changed and why
+  - Which page numbers to look at (e.g. "p46–47")
+  - Confirmation that the build is clean
+
+  If reviewers ask for tweaks, push more commits to the **same branch** — the PR updates automatically. No new PRs per revision.
+
+</Steps>
+
+---
+
+## Staying in Sync with Upstream
+
+If the main repository moved while you were busy, drift happens — bring yourself back up to date before resolving conflicts:
+
+```bash
+git checkout main
+git pull upstream main
+git checkout your-branch
+git merge main    # resolve any conflicts calmly, then rebuild
+```
+
+---
+
+## How Reviews Work
+
+Reviews in this project are warm, honest, and constructive. Good formula work gets celebrated loudly; anything that needs another pass gets gentle, specific notes. Reviews here are a conversation, not a verdict. If a comment is unclear, ask — the maintainers would rather talk it out than reject a contribution.
+
+---
+
+## The Bar
+
+- Physics that is correct, units that are consistent.
+- Khmer that a Grade 12 student reads effortlessly.
+- Layout that does not overflow or overlap.
+- A build that compiles clean.
+
+That is genuinely it. You do not need to be perfect — you need to be kind and willing.

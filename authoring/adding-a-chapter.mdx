@@ -1,0 +1,138 @@
+---
+title: "Adding a New Chapter to the Khmer Physics Handbook"
+sidebarTitle: "Adding a Chapter"
+description: "The exact three-step process for adding a chapter: create the content file, create the banner file, and wire both into main.tex with the correct \\input{} lines."
+---
+
+Every chapter in the Handbook is split across two files: a **banner** file that produces the dramatic chapter-opening page, and a **content** file that holds all lesson material. Both files must be registered in `main.tex` with matching `\input{}` lines before the book will compile them. The section below walks through each step in order; skipping any one of them will either produce a blank opening page or silently omit the chapter from the final PDF.
+
+<Warning>
+  Equation and figure numbering is **continuous through the entire book** — it does not restart per lesson or per chapter. As of `v1.0.0-alpha.14` the book stands at equations **(១)–(២៩)** and figures **រូបទី១–រូបទី៤១**. Any OCR-pasted lesson text will carry its own local numbers that always collide with the existing sequence; renumber everything before committing.
+</Warning>
+
+## The three-step recipe
+
+<Steps>
+
+### Create `chapters/chapterN.tex`
+
+This file holds all lesson content for the chapter: headings, body prose, equations, figures, and formula boxes. Use the structural macros defined in `preamble.tex` — never redefine them per chapter.
+
+**Key macros for chapter content:**
+
+| Macro | Purpose |
+|---|---|
+| `\khmerlesson{...}` | Lesson heading |
+| `\khmertopic{...}` | Numbered topic |
+| `\khmersubtopic{...}` | Numbered sub-topic |
+| `\khmersubsubtopic{...}` | Numbered sub-sub-topic |
+| `\khmerphoto[width]{path}{caption}` | Framed body photo (never bare `\includegraphics`) |
+| `\formulabox[opts]{title}{...}` | Titled box for a cluster of formulas |
+| `\defbox{...}` | Plain panel with a `bacpink` left accent bar |
+| `\khmernumraw{n}` | Arabic integer → Khmer numeral |
+
+**Before inserting any OCR-pasted lesson text, run a cleanup pass:**
+
+- Strip every `[cite: N]` annotation left by the OCR engine.
+- Normalize all standard spellings (see the table in CONTRIBUTING.md — e.g. `ម៉ាញេទិក`, never `ម៉ាញ៉េទិច`; `សូលេណូអុីត`, never `សូឡេណូអ៊ីត`).
+- Continue the **book-wide** equation and figure numbering — do not restart at (១) or រូបទី១.
+- Find and replace every in-prose cross-reference (e.g. "ពីសមីការ (3)") that points to a now-stale local number.
+
+**Verify the build after each lesson segment you add:**
+
+```bash
+latexmk main.tex
+```
+
+A passing build satisfies all four of these conditions:
+
+1. Process exits with code **0**.
+2. `main.log` contains **errors: 0** (no lines beginning with `^!`).
+3. `main.log` contains **missing chars: 0**.
+4. The `Output written` line at the end of the log shows a plausible page count that grew by the expected amount.
+
+<Note>
+  Two pre-existing underfull/overfull hbox warnings live in the lesson-2 topic titles and are **not regressions**. A small, stable count is fine. A sudden jump in that count after your edit is a signal to investigate.
+</Note>
+
+### Create `banners/chapterNbanner.tex`
+
+The banner file produces the dramatic chapter-opening page — a full-bleed title block with an optional photo and ornamental styling. Two macros cover the common cases:
+
+**Option A — `\khmerchapterbanner` (photo backdrop):**
+
+```latex
+\khmerchapterbanner{4}{ចរន្តឆ្លាស់}{img/acbanner.jpg}
+%                  ^N  ^Title text   ^Banner image path
+```
+
+**Option B — `\khmerornatetitle` (ornate text-only title):**
+
+```latex
+\khmerornatetitle{ចរន្តឆ្លាស់ — មេរៀនទី៤}{ch4}
+```
+
+Both macros are defined in `preamble.tex`. Choose whichever matches the visual style you want for that chapter's opening. Banner images must be committed to `img/` and tracked by Git LFS — see the [Known Issues](/authoring/known-issues) page for the LFS workflow.
+
+### Add both files to `main.tex`
+
+Open `main.tex` and add the following block after the last existing chapter pair, following the established pattern exactly:
+
+```latex
+\input{banners/chapterNbanner.tex}
+\input{chapters/chapterN.tex}
+\clearpage
+```
+
+**Always include `\clearpage` after each chapter.** Without it, the next banner page may bleed into the final content page of the current chapter.
+
+**Reference — the existing wiring in `main.tex`:**
+
+```latex
+% chapter-opening banner page
+\input{banners/chapter1banner.tex}
+
+% load individual chapters from folder
+\input{chapters/chapter1.tex}
+
+% chapter-opening banner page
+\input{banners/chapter2banner.tex}
+
+% page break before next chapter if needed
+\clearpage
+\input{chapters/chapter2.tex}
+
+% chapter-opening banner page
+\input{banners/chapter3banner.tex}
+
+% page break before next chapter if needed
+\clearpage
+\input{chapters/chapter3.tex}
+```
+
+Mirror this pattern for chapter 4 and beyond. The `% page break before next chapter if needed` comment and the `\clearpage` before `\input{chapters/...}` are both intentional — keep them.
+
+</Steps>
+
+## Side-by-side text and figure layout
+
+For rows that place prose or bullet lists alongside a photo, mirror the column widths used throughout `chapter3.tex`:
+
+```latex
+\noindent
+\begin{minipage}[t]{0.58\textwidth}
+  \raggedright
+  % prose, itemize, equations…
+\end{minipage}%
+\hfill
+\begin{minipage}[t]{0.40\textwidth}
+  \vspace{0pt}
+  \khmerphoto[0.95\linewidth]{img/yourimage.jpg}{រូបទីNN៖ Caption text}
+\end{minipage}
+```
+
+Keep minipages short so page breaks stay clean. `formulabox` instances with `breakable=false` **must not** be nested inside a frozen minipage — they will overflow the page and stack their rows.
+
+<Tip>
+  Enable auto-rebuild while you work so you catch layout overflows immediately: `latexmk -pvc main.tex`. The watcher re-runs on every save and keeps the terminal open on failure.
+</Tip>

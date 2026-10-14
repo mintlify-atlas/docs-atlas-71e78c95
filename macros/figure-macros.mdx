@@ -1,0 +1,116 @@
+---
+title: "Figure Macros: Photos, Banners, and Side-by-Side Layouts"
+sidebarTitle: "Figure Macros"
+description: "How to include figures using \\khmerphoto and \\khmerbannerphoto in preamble.tex, plus the standard side-by-side minipage pattern used throughout chapter 3."
+---
+
+All images in the handbook are included through one of two dedicated macros — never with a bare `\includegraphics`. Both macros render a TikZ frame with rounded primary-colored corners around the image, which ties every photo into the sakura theme. Image files live in `img/` and are tracked by Git LFS via `.gitattributes` (`img/*` → LFS filter); see the note at the bottom of this page.
+
+The `\graphicspath` is set to `{images/}{img/}` in `preamble.tex`, so paths like `img/filename.jpg` resolve correctly without a leading `./`.
+
+---
+
+## `\khmerphoto[width]{path}{caption}`
+
+The general-purpose framed body photo, for use in chapter content files (`chapters/chapterN.tex`). Renders the image centered in a TikZ node, surrounded by a `primary`-colored border at 1.5pt weight with 3mm rounded corners (`rounded corners=3mm`). An optional caption in `\khmerpagenum\small\color{brownheader}` appears below the frame when provided.
+
+**Signature:** `\khmerphoto[width]{path}{caption}`
+
+<ParamField path="width" type="LaTeX dimension" default="0.6\linewidth">
+  Width of the image passed to `\includegraphics[width=...]`. Any LaTeX dimension expression is valid (e.g. `0.4\linewidth`, `8cm`, `\textwidth`). The TikZ frame auto-fits the rendered image size.
+</ParamField>
+
+<ParamField path="path" type="file path">
+  Image path relative to `\graphicspath`. Reference files as `img/filename.jpg` — do not use `./img/` or absolute paths.
+</ParamField>
+
+<ParamField path="caption" type="string">
+  Caption text displayed below the frame in `\khmerpagenum\small\color{brownheader}`. Pass an empty group `{}` to suppress the caption entirely. When non-empty, the caption is preceded by `\\[0.15cm]` spacing.
+</ParamField>
+
+### Usage examples
+
+**Default width (0.6\linewidth) with a caption:**
+
+```latex
+\khmerphoto{img/lorentz_force_diagram.jpg}{រូបទី១២៖ ទិសដៅកម្លាំង Lorentz}
+```
+
+**Custom width, no caption:**
+
+```latex
+\khmerphoto[0.75\linewidth]{img/solenoid_field.jpg}{}
+```
+
+**0.4\linewidth custom width with a caption (for side-by-side use):**
+
+```latex
+\khmerphoto[0.4\linewidth]{img/right_hand_rule.jpg}{រូបទី១៣៖ ច្បាប់ដៃស្ដាំ}
+```
+
+<Warning>
+  Never use `\includegraphics` directly in chapter files. The `\khmerphoto` macro ensures every body image receives the correct rounded primary border and caption styling. Bare `\includegraphics` will compile but breaks the visual consistency and bypasses the caption system.
+</Warning>
+
+---
+
+## `\khmerbannerphoto{path}`
+
+A full-width framed photo for chapter banner files (`banners/chapterNbanner.tex`). Renders the image at `0.85\linewidth` in a TikZ node with a `primary`-colored border at **2pt** weight and 4mm rounded corners (`rounded corners=4mm`) — slightly heavier and wider than the body photo frame. No caption is supported.
+
+**Signature:** `\khmerbannerphoto{path}`
+
+<ParamField path="path" type="file path">
+  Image path relative to `\graphicspath`. Same rules as `\khmerphoto`.
+</ParamField>
+
+```latex
+% banners/chapter3banner.tex
+\khmerchapterbanner{៣}{អគ្គិសនីនិងម៉ាញេទិច}{img/chapter3banner.jpg}
+\khmerbannerphoto{img/chapter3_opening.jpg}
+```
+
+<Note>
+  `\khmerbannerphoto` is intended for the standalone banner files only. For all photos inside lesson content, use `\khmerphoto` instead.
+</Note>
+
+---
+
+## Side-by-side minipage pattern
+
+When a paragraph needs to sit alongside an illustration — the most common layout in chapter 3 for Lorentz force diagrams, circuit sketches, and right-hand-rule figures — use the following two-minipage pattern. These exact column widths are the house standard enforced in `AGENTS.md`; do not change the proportions.
+
+```latex
+\noindent
+\begin{minipage}[t]{0.58\textwidth}
+  % Text, itemize lists, equations using flalign*
+  កម្លាំង Lorentz ដែលកម្លាំងម៉ាញេទិករ​ ៈ
+  \begin{itemize}[leftmargin=1.2em]
+    \item $\vec{F} = q\vec{v} \times \vec{B}$
+    \item ទិសដៅស្របតាមច្បាប់ដៃស្ដាំ
+  \end{itemize}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.40\textwidth}
+  \khmerphoto[0.95\linewidth]{img/lorentz_diagram.jpg}{រូបទី២០៖ កម្លាំង Lorentz}
+\end{minipage}
+```
+
+### Rules for this pattern
+
+- **Always use `0.58\textwidth` + `0.40\textwidth`** — these widths leave `\hfill` room for the inter-column gap and match what is already typeset in `chapter3.tex`. Using different values introduces inconsistent gutters across the chapter.
+- **Use `[t]` alignment** on both minipages so tops align at the first baseline of each column.
+- **Keep minipage rows short.** LaTeX cannot break a page inside a minipage. If a minipage pair is taller than the remaining page space, the entire block floats to the next page, leaving an ugly gap. When content is long, split into multiple minipage pairs.
+- **Do not place `formulabox` inside a minipage.** The `formulabox` environment uses `breakable` mode which conflicts with the frozen vertical space inside a minipage and causes overflow or incorrect stacking. Place formula boxes before or after the minipage pair, never inside one.
+- The right-hand minipage typically holds `\khmerphoto` or a `tikzpicture` (for vector diagrams). Never use bare `\includegraphics` here.
+
+<Warning>
+  A `formulabox` (with or without `breakable=false`) must **never** appear inside either minipage column. Place all formula boxes outside the minipage pair — before it, after it, or between two pairs.
+</Warning>
+
+---
+
+## Git LFS and image files
+
+<Note>
+  `img/*` is tracked by Git LFS via `.gitattributes`. Any new image added under `img/` is automatically staged for LFS — no manual `git lfs track` is needed. If images appear as ~130-byte text files after cloning, run `git lfs pull` to fetch the actual blobs. The compiled `main.pdf` is **not** LFS-tracked (it is committed directly by design).
+</Note>
