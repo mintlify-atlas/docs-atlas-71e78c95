@@ -1,5 +1,5 @@
 ---
-title: "Project Goals: What the Khmer Physics Handbook Aims to Deliver"
+title: "Project Goals: Khmer Physics Handbook Vision & Scope"
 sidebarTitle: "Project Goals"
 description: "The vision, scope, and design principles behind the Khmer Physics Handbook — a free, Khmer-language physics resource for Grade 12 students."
 ---
@@ -16,7 +16,7 @@ The language of the book is Khmer throughout — prose, headings, captions, figu
 
 ### Full Khmer Numeral System
 
-Every number in the book that lives outside of a mathematical expression is rendered in Khmer numerals: page numbers, section numbers, figure references, equation labels. The `\\khmernumraw{n}` macro converts Arabic digits; `\\khmernum{n}` produces a full page-number string with the prefix "ទំព័រទី".
+Every number in the book that lives outside of a mathematical expression is rendered in Khmer numerals: page numbers, section numbers, figure references, equation labels. The `\khmernumraw{n}` macro converts Arabic digits; `\khmernum{n}` produces a full page-number string with the prefix "ទំព័រទី".
 
 <Note>
   Khmer numerals must live **outside** math mode. Inside `$...$` they fall back to `cmr12` and produce "Missing character" output in the build log. The house pattern is to place equation labels in a `center` environment after the `flalign*` block, never inside it.
@@ -24,9 +24,9 @@ Every number in the book that lives outside of a mathematical expression is rend
 
 ### The Sakura Aesthetic
 
-The project made a deliberate choice to look nothing like a government document. The sakura theme — soft pink tones, rounded boxes, floral `\\tanbgdivider` section dividers, a `bacpink` accent bar on definition panels — exists because students are more likely to open a book that looks like it was made with care.
+The project made a deliberate choice to look nothing like a government document. The sakura theme — soft pink tones, rounded boxes, floral `\tanbgdivider` section dividers, a `bacpink` accent bar on definition panels — exists because students are more likely to open a book that looks like it was made with care.
 
-The theme was not adopted from an external package. The box aesthetic was ported from its inspiration into a custom `\\formulabox` implementation in `preamble.tex`. Colours (`primary`, `boxbg`, `boxframe`, `brownheader`, `bacpurple`, `bacpink`, `khmerred`, `wavered`, `waveblue`, `wavepurple`) are all defined centrally in `preamble.tex` so every chapter shares the same palette.
+The theme was not adopted from an external package. The box aesthetic was ported from its inspiration into a custom `\formulabox` implementation in `preamble.tex`. Colours (`primary`, `boxbg`, `boxframe`, `brownheader`, `bacpurple`, `bacpink`, `khmerred`, `wavered`, `waveblue`, `wavepurple`) are all defined centrally in `preamble.tex` so every chapter shares the same palette.
 
 ### XeLaTeX + fontspec + HarfBuzz for Correct Khmer Shaping
 
@@ -39,7 +39,7 @@ Khmer is an Indic-family script that requires OpenType shaping to render correct
 - **Romnea** (`khmerpagenum`) — page numbers
 - **Ang TaPich** (`khmerheader`) — headings
 - **Moul** (`khmermoul`) — display titles
-- **Nunito** (`\\englishfont`) — Latin fallback
+- **Nunito** (`\englishfont`) — Latin fallback
 
 All fonts live in the `fonts/` directory of the repository but must be installed **on the system** before building. XeLaTeX resolves fonts through the OS font cache, not from the working directory.
 
@@ -72,7 +72,7 @@ git lfs pull
     Contributors who want to write new lesson content or verify the physics. The full workflow is documented in [CONTRIBUTING.md](https://github.com/airiharuki/physics_textbook/blob/main/CONTRIBUTING.md). Content follows Conventional Commits (`feat/fix/chore/...(chapter3): ...`) and every commit receives an annotated tag. OCR-pasted content needs a cleanup pass: strip citation markers, normalize Khmer terminology, and continue the book-wide figure and equation numbering sequence.
   </Tab>
   <Tab title="Figure Makers & Designers">
-    Contributors who produce TikZ vector graphics, circuit diagrams, or photo assets. Circuit diagrams use `circuitikz` loaded globally with `[american]` style; the house style for drawn circuits is `[line width=1.1pt, scale=0.72, transform shape]`. Photos always go through `\\khmerphoto[width]{path}{caption}` — never bare `\\includegraphics`. New colors and macros belong in `preamble.tex`.
+    Contributors who produce TikZ vector graphics, circuit diagrams, or photo assets. Circuit diagrams use `circuitikz` loaded globally with `[american]` style; the house style for drawn circuits is `[line width=1.1pt, scale=0.72, transform shape]`. Photos always go through `\khmerphoto[width]{path}{caption}` — never bare `\includegraphics`. New colors and macros belong in `preamble.tex`.
   </Tab>
 </Tabs>
 

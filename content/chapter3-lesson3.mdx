@@ -1,6 +1,6 @@
 ---
 title: "Chapter 3, Lesson 3: Self-Inductance, RL and LC Circuits"
-sidebarTitle: "RL & LC Circuits"
+sidebarTitle: "RL/LC Circuits"
 description: "Mutual inductance, self-inductance, magnetic energy, RL circuit current growth and decay, LC oscillations, and total electromagnetic energy conservation."
 ---
 
@@ -26,11 +26,11 @@ $$e_2 = -M_{21}\frac{di_1}{dt} \tag{९}$$
 
 Symmetrically, current changes in coil 2 induce in coil 1:
 
-$$N_1\Phi_1 = M_{12}\,i_2 \quad\Rightarrow\quad e_1 = -M_{12}\frac{di_2}{dt} \tag{१०–११}$$
+$$N_1\Phi_1 = M_{12}\,i_2 \quad\Rightarrow\quad e_1 = -M_{12}\frac{di_2}{dt} \tag{११–१२}$$
 
 **Symmetry:** It can be shown that $M_{12} = M_{21}$, so a single **mutual inductance** $M$ describes both directions:
 
-$$\boxed{M_{12} = M_{21} = M} \tag{१२}$$
+$$M_{12} = M_{21} = M \tag{—}$$
 
 **Photo in source:** รូបទី៣០ (`mutualinductance.png`) shows the two-coil geometry with shared magnetic flux linkage.
 
@@ -228,14 +228,13 @@ In a real circuit, resistance dissipates energy and the oscillations are **dampe
 | (७) | $e_2 = -N_2\,d\Phi_{B2}/dt$ | Mutual induction EMF |
 | (८) | $N_2\Phi_2 = M_{21}\,i_1$ | Flux linkage definition |
 | (९) | $e_2 = -M\,di_1/dt$ | Mutual induction formula |
-| (१२) | $M_{12} = M_{21} = M$ | Symmetry of mutual inductance |
+| — | $M_{12} = M_{21} = M$ | Symmetry of mutual inductance (prose in source) |
 | (१५) | $N\Phi = Li$ | Self-inductance definition |
 | (१६) | $L = \mu_0 N^2 A / l$ | Solenoid inductance |
 | (१७) | $e = -L\,di/dt$ | Instantaneous self-induced EMF |
 | (१८) | $\mathcal{E} = -L\,\Delta I/\Delta t$ | Average self-induced EMF |
 | (२०) | $E_L = \frac{1}{2}LI^2$ | Magnetic energy in inductor |
-| (२१) | $i(t) = I_m(1 - e^{-t/\tau_{RL}})$ | RL current growth |
-| (२१) | $\tau_{RL} = L/R$ | RL time constant |
+| (२१) | $i(t) = I_m(1 - e^{-t/\tau_{RL}})$, $\ \tau_{RL} = L/R$ | RL current growth and time constant |
 | (२２) | $i(t) = I_m\,e^{-t/\tau_{RL}}$ | RL current decay |
 | (२३) | $Q_0 = C\mathcal{E}$ | Initial capacitor charge |
 | (२४) | $E_E = \frac{1}{2}C\mathcal{E}^2$ | Initial electric energy |

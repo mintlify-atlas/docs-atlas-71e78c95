@@ -114,7 +114,7 @@ A clickable YouTube link box with an auto-generated QR code, styled to match `fo
 **Signature:** `\khmervideobox{video-id-or-url}{title}{caption}`
 
 <ParamField path="video-id-or-url" type="string">
-  Either a bare YouTube video ID (e.g. `dQw4w9WgXcQ`) or a full `https://` URL. If the argument does not start with `http`, the macro prepends `https://youtu.be/` automatically. The resulting URL is used for both the hyperlink and the QR code.
+  A bare YouTube video ID (e.g. `dQw4w9WgXcQ`). The macro tests the argument with `\ifdefstring` for exact equality to the string `http`; since a bare ID never equals `http`, the macro always prepends `https://youtu.be/` to form the full URL used for both the hyperlink and the QR code. Pass only bare IDs — not full `https://` URLs — to this argument.
 </ParamField>
 
 <ParamField path="title" type="string">
@@ -139,14 +139,6 @@ The box is `breakable` (unlike `formulabox`'s house style of `breakable=false`).
     {វីដេអូនេះពន្យល់ពីការបង្ហាញ EMF ដែលកើតឡើង
      ក្នុងចន្លោះ flux ម៉ាញេទិកផ្លាស់ប្ដូរ។
      ស្កេន QR code ដើម្បីមើលភ្លាមៗ។}
-```
-
-```latex
-% Full URL form
-\khmervideobox{https://youtu.be/dQw4w9WgXcQ}
-    {អាំងឌុចស្យុងអេឡិចត្រូម៉ាញេទិក}
-    {ការពន្យល់ Lenz's law និង Faraday's law
-     ជាមួយឧទាហរណ៍ជាក់ស្ដែង។}
 ```
 
 <Note>

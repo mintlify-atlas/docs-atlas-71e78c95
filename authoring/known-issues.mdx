@@ -17,7 +17,7 @@ This page catalogues every known bug and environmental quirk in the Khmer Physic
 **Cause:** XeLaTeX switches to the `cmr12` Latin font inside `$...$` for any character that the math font does not cover. Khmer Unicode digits fall into this gap, so a label like `(២)` placed inside a math environment silently drops the glyph and emits a warning.
 
 **Symptom in build log:**
-```
+```text
 Missing character: There is no ២ in font cmr12!
 ```
 
@@ -41,7 +41,7 @@ The `\khmernumraw{2}` call sits in plain paragraph mode where HarfBuzz can shape
 
 **Cause:** An interrupted build — Ctrl-C, editor crash, power cut — leaves a partially written `main.out` or `main.toc`. On the next run, LaTeX reads the truncated file and hyperref trips over the broken bookmark data, reporting:
 
-```
+```text
 Runaway argument?
 ! File ended while scanning use of \Hy@setfield.
 ```
@@ -63,7 +63,7 @@ Running `latexmk -C` is always safe — it only removes generated files that are
 
 **Cause:** All photos and figures in `img/` are tracked by **Git LFS** (Large File Storage). If you cloned the repository without Git LFS installed, or downloaded the source ZIP from GitHub's "Code → Download ZIP" button, you received LFS pointer files instead of real images. Pointer files look like:
 
-```
+```text
 version https://git-lfs.github.com/spec/v1
 oid sha256:0a8f…
 size 245890
@@ -100,7 +100,7 @@ git lfs pull           # fetch and materialise every LFS blob
 
 **Fix:** `.gitattributes` already pins shell scripts and hooks to LF:
 
-```
+```text
 *.sh            eol=lf
 .githooks/**    eol=lf
 ```

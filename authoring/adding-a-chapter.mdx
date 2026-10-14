@@ -1,7 +1,7 @@
 ---
 title: "Adding a New Chapter to the Khmer Physics Handbook"
 sidebarTitle: "Adding a Chapter"
-description: "The exact three-step process for adding a chapter: create the content file, create the banner file, and wire both into main.tex with the correct \\input{} lines."
+description: "Three-step recipe to add a chapter: create chapters/chapterN.tex, create banners/chapterNbanner.tex, then wire both into main.tex with \\input{} lines."
 ---
 
 Every chapter in the Handbook is split across two files: a **banner** file that produces the dramatic chapter-opening page, and a **content** file that holds all lesson material. Both files must be registered in `main.tex` with matching `\input{}` lines before the book will compile them. The section below walks through each step in order; skipping any one of them will either produce a blank opening page or silently omit the chapter from the final PDF.

@@ -1,7 +1,7 @@
 ---
 title: "Document Structure Macros: Chapters, Lessons, Topics"
 sidebarTitle: "Structure Macros"
-description: "The heading hierarchy macros defined in preamble.tex — \\khmerchapter through \\khmersubsubtopic — with their TOC behavior, font usage, and example LaTeX."
+description: "The heading hierarchy macros in preamble.tex — \\khmerchapter through \\khmersubsubtopic — with TOC level mapping, font usage, and LaTeX examples."
 ---
 
 The Khmer Physics Handbook uses a custom heading hierarchy rather than standard LaTeX sectioning commands. All structure macros are defined in `preamble.tex` and must never be redefined per-chapter. Each macro calls `\phantomsection` before its `\addcontentsline` entry so that hyperref bookmarks point to the correct page, and each carries its own `\vspace` budget — do not add extra vertical space around them.
@@ -115,7 +115,7 @@ A full chapter opener block, typically used in `banners/chapterNbanner.tex`. It 
 
 1. A purple (`primary`) rounded-corner box (2.3 cm × 1.9 cm) containing the word `ជំពូក` in `\khmerheader\small` and the chapter digit in `\fontsize{26}{26}\bfseries`.
 2. The chapter title in `\khmermoul\Large\color{brownheader}` beside it.
-3. A full-width photo in a `tcolorbox` with a 2pt `primary` border at 4mm arc radius, cropped to 7.5 cm tall with `keepaspectratio`.
+3. A full-width photo in a `tcolorbox` with a 2pt `primary` border at 4mm arc radius, constrained to 7.5 cm tall with `keepaspectratio`.
 
 <ParamField path="num" type="Khmer digit string">
   The chapter number as a Khmer digit (e.g. `៤`). Displayed large inside the purple badge and appended to `ជំពូកទី` in the TOC entry.

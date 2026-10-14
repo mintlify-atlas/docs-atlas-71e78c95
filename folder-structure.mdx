@@ -27,7 +27,7 @@ The repository is a single XeLaTeX document that compiles to one PDF. There are 
 ├── .latexmkrc            # Makes `latexmk main.tex` just work (xelatex)
 ├── .gitignore            # Keeps the LaTeX junk out
 ├── .gitattributes        # img/* → LFS; *.sh + .githooks/** stay LF
-├── .githooks/            # commit-msg gate + LFS pre-push hook
+├── .githooks/            # commit-msg gate + four LFS lifecycle hooks
 ├── AGENTS.md             # Operator notes for AI agents (build, macros, gotchas)
 ├── CHANGELOG.md          # The whole saga, in order
 ├── CONTRIBUTING.md       # How to join the club 🤫
@@ -145,9 +145,12 @@ Controls two things:
 
 ### `.githooks/`
 
-Contains two Git hooks wired in via `core.hooksPath = .githooks`:
+Contains five Git hooks wired in via `core.hooksPath = .githooks`:
 
 - **`commit-msg`** — enforces the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) format. A commit message that does not match `<type>(<scope>): <description>` is rejected with an explanatory message. Valid types are `build`, `chore`, `ci`, `docs`, `feat`, `fix`, `perf`, `refactor`, `revert`, `style`, and `test`. Breaking changes use `!` before the colon and a `BREAKING CHANGE:` footer.
+- **`post-checkout`** — an LFS lifecycle hook that ensures LFS pointer files are resolved to real blobs after a branch switch or checkout.
+- **`post-commit`** — an LFS lifecycle hook that queues newly committed LFS objects for upload after each commit.
+- **`post-merge`** — an LFS lifecycle hook that fetches any LFS objects introduced by the merged branch after a `git merge` or `git pull`.
 - **`pre-push`** — an LFS hook that ensures LFS objects are uploaded before the push goes through, preventing a push that would leave dangling LFS pointer references on the remote.
 
 ---

@@ -1,7 +1,7 @@
 ---
-title: "Khmer Numeral Macros: \\khmernumraw and \\khmernum"
+title: "Khmer Numeral Macros: Digits, Page Numbers, and Circles"
 sidebarTitle: "Khmer Numerals"
-description: "How \\khmernumraw and \\khmernum convert Arabic integers to Khmer digits, plus \\khmerdigit for single digits and the critical rule against using Khmer numerals inside math mode."
+description: "How \\khmerdigit, \\khmernumraw, and \\khmernum render Khmer digits in the handbook, plus the prohibition on Khmer numerals inside LaTeX math mode."
 ---
 
 Every number visible in the Khmer Physics Handbook — page numbers, equation labels, figure numbers, section counters — is rendered in Khmer script using a set of conversion macros defined in `preamble.tex`. This page documents those macros, the implementation choices behind them, and the one rule that must never be broken: **Khmer numeral macros must not appear inside math mode**.
